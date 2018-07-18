@@ -29,13 +29,11 @@ app.initContract = function() {
     // Set the provider for our contract
     app.contracts.HelloWorld.setProvider(app.web3Provider);
 
-    return app.getTotalSupply();
+    return app.totalSupply();
   });
-
-  return app.bindEvents();
 };
 
-app.getTotalSupply = function() {
+app.totalSupply = function() {
   app.contracts.HelloWorld.deployed().then(function(instance) {
     return instance.totalSupply.call();
   }).then(function(totalSupply) {
@@ -45,8 +43,29 @@ app.getTotalSupply = function() {
   });
 };
 
+app.transfer = function(address, amount) {
+  console.debug(address);
+  app.contracts.HelloWorld.deployed().then(function(instance) {
+    return instance.transfer(address, amount);
+  }).then(function(success) {
+     $('#transactionSuccess').text(String(success));
+  }).catch(function(err) {
+    console.log(err.message);
+  });
+};
+
 $(function() {
   $(window).load(function() {
     app.init();
+  });
+
+  $('#transferForm').submit(function(e) {
+      console.log('do something');
+      e.preventDefault(); // don't submit form
+      var address = $('#transferForm').find('input[id="transferAddress"]').val();
+      var amount = $('#transferForm').find('input[id="transferAmount"]').val();
+      amount = Number(amount);
+      console.log(address);
+      app.transfer(address, amount);
   });
 });
