@@ -3,7 +3,7 @@ pragma solidity ^0.4.23;
 contract Task {
     // Version without any tokenized payments
 
-    address public tester;
+    address public owner;
     address public corrector;
     
     string public question;
@@ -12,11 +12,11 @@ contract Task {
     mapping(address => bytes32) answers;
     mapping(address => uint) scores;
     
-    function Task(address corrector, string question, uint maxScore){
+    function Task(address _corrector, string _question, uint _maxScore){
         owner = msg.sender;
-        this.corrector = corrector;
-        this.question = question;
-        this.maxScore = maxScore;
+        corrector = _corrector;
+        question = _question;
+        maxScore = _maxScore;
     }
 
     function solve(bytes32 answer){
