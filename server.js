@@ -2,11 +2,11 @@ const path = require('path');
 
 const bodyParser = require('body-parser');
 const express = require('express');
-// const Web3 = require('web3');
+
+const db = require('./db');
+const eth = require('./ethereum');
 
 const port = 3000 || process.env.PORT;
-// const truffle_connect = require('./src/js/app')
-
 const app = express();
 
 // parse application/x-www-form-urlencoded
@@ -48,11 +48,24 @@ app.get('/create', function(req, res){
 });
 
 app.post('/create', function(req, res){
-  res.sendFile(path.join(__dirname, 'src', 'create2.html'));
+    eth.getTaskData(req.body.contract)
+    .then(function(values){
+        var json = {
+            "contract": req.body.contract,
+            "question": values[0],
+            "owner": values[1],
+            "corrector": values[2],
+            "maxScore": values[3]
+        };
+
+        db.addTask(json); //keep track of this contract in DB
+    });
+
+    res.redirect('/tasks');
 });
 
-app.get('/mytasks', function(req, res){
-  res.sendFile(path.join(__dirname, 'src', 'mytasks.html'));
+app.get('/tasks', function(req, res){
+  res.sendFile(path.join(__dirname, 'src', 'tasks.html'));
 });
 
 app.listen(port, () => {
