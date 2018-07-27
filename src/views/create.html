@@ -21,6 +21,7 @@
 
 {% block scripts %}
 <script>
+  //TODO: check if any input is empty (jqueryvalidation.org)
   $('#createForm').submit(function(e) {
       console.log('create Task');
       e.preventDefault(); // don't submit form

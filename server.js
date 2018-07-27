@@ -61,7 +61,12 @@ app.post('/create', function(req, res){
 app.get('/tasks/:owner', function(req, res){
     db.getTasksByOwner(req.params.owner)
     .then(function(values){
-        res.render('tasks.html', {tasks: values});
+        for (let i = 0; i < values.length; i++) {
+            // YYYY-MM-DD HH:MM:SS -> YYYY-MM-DD
+            values[i].created_utc = values[i].created_utc.split(" ")[0];
+        }
+        var ownerShort = req.params.owner.substring(0, 8) + '...'; 
+        res.render('tasks.html', {tasks: values, ownerShort: ownerShort});
     });
 });
 
