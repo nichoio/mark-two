@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Task Overview</h1>
+<ul>
+  {% for t in tasks %}
+  <li>{{ t.question }}: {{ t.corrector }}</li>
+  {% endfor %}
+</ul>
+
+{% endblock %}

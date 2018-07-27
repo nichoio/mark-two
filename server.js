@@ -2,6 +2,7 @@ const path = require('path');
 
 const bodyParser = require('body-parser');
 const express = require('express');
+const nunjucks = require('nunjucks');
 
 const db = require('./db');
 const eth = require('./ethereum');
@@ -9,42 +10,36 @@ const eth = require('./ethereum');
 const port = 3000 || process.env.PORT;
 const app = express();
 
+nunjucks.configure(path.join(__dirname, 'src', 'views'), {
+    express: app,
+    watch: false,
+    noCache: true
+});
+
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // parse application/json
 app.use(bodyParser.json());
 
-app.get('/js/app.js', function(req, res) {
-  res.sendFile(path.join(__dirname, 'src', 'js', 'app.js'));
-});
-
-app.get('/js/jquery-3.3.1.min.js', function(req, res) {
-  res.sendFile(path.join(__dirname, 'src', 'js', 'jquery-3.3.1.min.js'));
-});
-
-app.get('/js/web3.min.js', function(req, res) {
-  res.sendFile(path.join(__dirname, 'src', 'js', 'web3.min.js'));
-});
-
-app.get('/css/bootstrap.min.css', function(req, res) {
-  res.sendFile(path.join(__dirname, 'src', 'css', 'bootstrap.min.css'));
-});
+app.use('/img', express.static(path.join(__dirname, 'src', 'img')))
+app.use('/css', express.static(path.join(__dirname, 'src', 'css')))
+app.use('/js', express.static(path.join(__dirname, 'src', 'js')))
 
 app.get('/TaskABI.json', function(req, res) {
-  res.sendFile(path.join(__dirname, 'src', 'TaskABI.json'));
+    res.sendFile(path.join(__dirname, 'src', 'TaskABI.json'));
 });
 
 app.get('/Task.bin', function(req, res) {
-  res.sendFile(path.join(__dirname, 'src', 'Task.bin'));
+    res.sendFile(path.join(__dirname, 'src', 'Task.bin'));
 });
 
 app.get('/', function(req, res){
-  res.sendFile(path.join(__dirname, 'src', 'index.html'));
+    res.render('index.html');
 });
 
 app.get('/create', function(req, res){
-  res.sendFile(path.join(__dirname, 'src', 'create.html'));
+    res.render('create.html');
 });
 
 app.post('/create', function(req, res){
@@ -59,15 +54,17 @@ app.post('/create', function(req, res){
         };
 
         db.addTask(json); //keep track of this contract in DB
+        res.redirect('/tasks/' + values[1]); //show tasks of owner afterwards
     });
-
-    res.redirect('/tasks');
 });
 
-app.get('/tasks', function(req, res){
-  res.sendFile(path.join(__dirname, 'src', 'tasks.html'));
+app.get('/tasks/:owner', function(req, res){
+    db.getTasksByOwner(req.params.owner)
+    .then(function(values){
+        res.render('tasks.html', {tasks: values});
+    });
 });
 
 app.listen(port, () => {
-  console.log("Express Listening at http://localhost:" + port);
+    console.log("Express Listening at http://localhost:" + port);
 });

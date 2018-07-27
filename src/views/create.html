@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Create a new task contract</h1>
+<form id="createForm">
+  <div class="form-group">
+    <label>Question text</label>
+    <input type="text" class="form-control" id="questionText" placeholder="Enter question text">
+  </div>
+  <div class="form-group">
+    <label>Corrector</label>
+    <input type="text" class="form-control" id="corrector" placeholder="Enter public address of corrector">
+  </div>
+  <div class="form-group">
+    <label>Maximum score</label>
+    <input type="text" class="form-control" id="maxScore" placeholder="Enter highest possible score">
+  </div>
+<button type="submit" id="createTask" class="btn btn-primary">Create task</button>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  $('#createForm').submit(function(e) {
+      console.log('create Task');
+      e.preventDefault(); // don't submit form
+      var questionText = $('#createForm').find('input[id="questionText"]').val();
+      var corrector = $('#createForm').find('input[id="corrector"]').val();
+      var maxScore = $('#createForm').find('input[id="maxScore"]').val();
+      maxScore = Number(maxScore);
+      app.newTask(questionText, corrector, maxScore);
+  });
+</script>
+{% endblock %}

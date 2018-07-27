@@ -13,11 +13,6 @@ function getTaskData(address) {
     var p4 = task.methods.maxScore().call();
 
     return Promise.all([p1, p2, p3, p4]);
-    // .then(function(values) {
-    //     console.log("VALUES!!!!");
-    //     console.log(values);
-    //     return values;
-    // });
 }
 
 module.exports = {
