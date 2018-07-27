@@ -1,4 +1,21 @@
+h1 {
+	margin-bottom: 20px;
+}
+
 .navbar {
 	border-bottom: 2px solid;
 	margin-bottom: 20px;
+}
+
+.btn-primary, .btn-primary:visited {
+	background-color: #444444; 
+	border-color: #444444; 
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+	background-color: black !important; 
+	border-color: black !important;
+	box-shadow: none !important; 
 }
