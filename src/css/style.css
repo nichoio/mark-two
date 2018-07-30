@@ -1,11 +1,13 @@
-h1 {
-	margin-bottom: 20px;
+h6 {
+	margin-bottom: 30px;
 }
 
 .navbar {
 	border-bottom: 2px solid;
 	margin-bottom: 20px;
 }
+
+/* Bootstrap 4 */
 
 .btn-primary, .btn-primary:visited {
 	background-color: #444444; 
