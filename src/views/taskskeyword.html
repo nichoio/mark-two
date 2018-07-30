@@ -1,0 +1,11 @@
+{% extends "list.html" %}
+
+{% block headline %}Tasks with Keyword "{{ keyword }}"{% endblock %}
+{% block subheadline %}List of all tasks which are tagged with the given keyword.{% endblock %}
+{% block tasks %}
+  {% for t in tasks %}
+    {% include "listitemsolve.html" %}
+  {% else %}
+    No tasks found having keyword "{{ keyword }}".
+  {% endfor %}
+{% endblock %}

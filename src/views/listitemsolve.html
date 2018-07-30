@@ -4,12 +4,5 @@
     {{t.created_utc}}
   </div>
   <p class="mb-1">Address: {{ t.contract }}</p>
-  <p class="mb-1">
-    Corrector:
-    {% if t.owner == t.corrector %}
-      This address
-    {% else %}
-      {{ t.corrector }}
-    {% endif %}
-  </p>
+  <p class="mb-1">Corrector: {{ t.corrector }}</p>
 </a>
