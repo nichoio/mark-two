@@ -1,27 +1,11 @@
-{% extends "base.html" %}
+{% extends "list.html" %}
 
 {% block headline %}Tasks owned by {{ ownerShort }}{% endblock %}
 {% block subheadline %}List of all tasks which have the given address as the owner.{% endblock %}
-{% block content %}
-<div class="list-group">
+{% block tasks %}
   {% for t in tasks %}
-    <a href="#" class="list-group-item list-group-item-action flex-column">
-      <div class="d-flex w-100 justify-content-between">
-        <h5 class="mb-1">{{ t.question }}&nbsp;&nbsp;<span class="badge badge-info"">{{ t.keyword }}</span></h5>
-        {{t.created_utc}}
-      </div>
-      <p class="mb-1">Address: {{ t.contract }}</p>
-      <p class="mb-1">
-        Corrector:
-        {% if t.owner == t.corrector %}
-          Me
-        {% else %}
-          {{ t.corrector }}
-        {% endif %}
-      </p>
-    </a>
+    {% include "listitem.html" %}
   {% else %}
     No tasks owned by {{ ownerShort }} .
   {% endfor %}
-</div>
 {% endblock %}
