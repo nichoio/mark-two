@@ -7,16 +7,18 @@ contract Task {
     address public corrector;
     
     string public question;
+    string public keyword;
     uint public maxScore;
 
     mapping(address => bytes32) answers;
     mapping(address => uint) scores;
     
-    function Task(address _corrector, string _question, uint _maxScore){
+    function Task(address _corrector, string _question, string _keyword, uint _maxScore){
         owner = msg.sender;
         corrector = _corrector;
         question = _question;
         maxScore = _maxScore;
+        keyword = _keyword;
     }
 
     function solve(bytes32 answer){

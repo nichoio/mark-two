@@ -10,9 +10,10 @@ function getTaskData(address) {
     var p1 = task.methods.question().call();
     var p2 = task.methods.owner().call();
     var p3 = task.methods.corrector().call();
-    var p4 = task.methods.maxScore().call();
+    var p4 = task.methods.keyword().call();
+    var p5 = task.methods.maxScore().call();
 
-    return Promise.all([p1, p2, p3, p4]);
+    return Promise.all([p1, p2, p3, p4, p5]);
 }
 
 module.exports = {

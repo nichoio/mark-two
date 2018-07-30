@@ -7,14 +7,16 @@ function addTask(json) {
     que = json.question;
     own = json.owner;
     cor = json.corrector;
+    key = json.keyword;
     max = json.maxScore;
 
     //check if task table already has an entry under this contract address
     db.all("SELECT * FROM Tasks WHERE contract LIKE '" + con + "'", function(err, rows) {
         if (rows.length == 0){ //save this contract for the first time
             db.run(
-                "INSERT INTO Tasks (contract, question, owner, corrector, maxscore)" +
-                "VALUES ('" + con + "', '" + que + "', '" + own + "', '" + cor + "', " + max + ");");
+                "INSERT INTO Tasks (contract, question, owner, corrector, keyword, maxscore)" +
+                "VALUES ('" + con + "', '" + que + "', '" + own + "', '" +
+                cor + "', '" + key + "', " + max + ");");
             console.log("Save new address to Tasks: " + con);
         }
         else if (rows.length == 1) return;  // don't save since it's already there
@@ -26,7 +28,6 @@ function addTask(json) {
             process.exit(1); // terminate server
         }
     });
-
 }
 
 function getTasksByOwner(address) {

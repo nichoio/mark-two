@@ -50,7 +50,8 @@ app.post('/create', function(req, res){
             "question": values[0],
             "owner": values[1],
             "corrector": values[2],
-            "maxScore": values[3]
+            "keyword": values[3],
+            "maxScore": values[4]
         };
 
         db.addTask(json); //keep track of this contract in DB

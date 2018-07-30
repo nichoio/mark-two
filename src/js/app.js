@@ -21,14 +21,14 @@ app.initWeb3 = function() {
 };
 
 //deploy new task with current Metamask user as sender
-app.newTask = function(question, corrector, maxScore) {
+app.newTask = function(question, corrector, keyword, maxScore) {
   $.getJSON("TaskABI.json", function(json) {
     $.get("Task.bin", function(bin) {
       var task = new web3.eth.Contract(json);
 
       web3.eth.getAccounts(function(error, accounts) {
         task.deploy({
-          data: "0x" + bin, arguments: [corrector, question, maxScore]}).send(
+          data: "0x" + bin, arguments: [corrector, question, keyword, maxScore]}).send(
           {from: accounts[0], gasPrice: '1000', gas: 2000000}).on(
           'receipt', function(receipt){
             app.postTask(receipt.contractAddress);
