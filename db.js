@@ -32,7 +32,23 @@ function addTask(json) {
 
 function getTasksByOwner(address) {
     return new Promise(function (resolve, reject) {
-        db.all("SELECT * FROM Tasks WHERE owner LIKE '" + address + "'", function(err, rows) {
+        db.all(
+        "SELECT * FROM Tasks WHERE owner LIKE '" + address + "'", function(err, rows) {
+            if (err) {
+                console.error(err);
+                process.exit(1);
+            } else {
+                resolve(rows);
+            }
+        });
+    });
+}
+
+function getTasksByKeyword(keyword) {
+    //TODO: Add SQL-injection protection
+    return new Promise(function (resolve, reject) {
+        db.all(
+        "SELECT * FROM Tasks WHERE LOWER(keyword) LIKE '" + keyword + "'", function(err, rows) {
             if (err) {
                 console.error(err);
                 process.exit(1);
@@ -46,4 +62,5 @@ function getTasksByOwner(address) {
 module.exports = {
     addTask: addTask,
     getTasksByOwner: getTasksByOwner,
+    getTasksByKeyword: getTasksByKeyword,
 };
