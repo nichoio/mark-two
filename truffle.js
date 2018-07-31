@@ -1,6 +1,5 @@
 module.exports = {
-  // See <http://truffleframework.com/docs/advanced/configuration>
-  // for more about customizing your Truffle configuration!
+  // Needed to run 'truffle compile'
   networks: {
     development: {
       host: "127.0.0.1",
