@@ -10,7 +10,7 @@ const eth = require('./ethereum');
 const port = 3000 || process.env.PORT;
 const app = express();
 
-nunjucks.configure(path.join(__dirname, 'src', 'views'), {
+nunjucks.configure(path.join(__dirname, 'views'), {
     express: app,
     watch: false,
     noCache: true
@@ -22,17 +22,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
 
-app.use('/img', express.static(path.join(__dirname, 'src', 'img')))
-app.use('/css', express.static(path.join(__dirname, 'src', 'css')))
-app.use('/js', express.static(path.join(__dirname, 'src', 'js')))
-
-app.get('/TaskABI.json', function(req, res) {
-    res.sendFile(path.join(__dirname, 'src', 'TaskABI.json'));
-});
-
-app.get('/Task.bin', function(req, res) {
-    res.sendFile(path.join(__dirname, 'src', 'Task.bin'));
-});
+app.use('/img', express.static(path.join(__dirname, 'img')))
+app.use('/css', express.static(path.join(__dirname, 'css')))
+app.use('/js', express.static(path.join(__dirname, 'js')))
+app.use('/eth', express.static(path.join(__dirname, 'eth')))
 
 app.get('/', function(req, res){
     res.render('index.html');
