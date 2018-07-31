@@ -1,0 +1,11 @@
+{% extends "list.html" %}
+
+{% block headline %}Tasks owned by {{ ownerShort }}{% endblock %}
+{% block subheadline %}List of all tasks which have the given address as the owner.{% endblock %}
+{% block tasks %}
+  {% for t in tasks %}
+    {% include "listitem.html" %}
+  {% else %}
+    No tasks found owned by {{ ownerShort }} .
+  {% endfor %}
+{% endblock %}

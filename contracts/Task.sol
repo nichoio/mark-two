@@ -7,16 +7,18 @@ contract Task {
     address public corrector;
     
     string public question;
+    string public keyword;
     uint public maxScore;
 
-    mapping(address => bytes32) answers;
-    mapping(address => uint) scores;
+    mapping(address => bytes32) public answers;
+    mapping(address => uint) public scores;
     
-    function Task(address _corrector, string _question, uint _maxScore){
+    function Task(address _corrector, string _question, string _keyword, uint _maxScore){
         owner = msg.sender;
         corrector = _corrector;
         question = _question;
         maxScore = _maxScore;
+        keyword = _toLower(_keyword);
     }
 
     function solve(bytes32 answer){
@@ -33,8 +35,19 @@ contract Task {
         scores[testee] = score;
     }
 
-    // event Transfer(address indexed from, address indexed to, uint tokens);
-
-    // event Approval(address indexed tokenOwner, address indexed spender, uint tokens);
-
+    //from https://gist.github.com/ottodevs/c43d0a8b4b891ac2da675f825b1d1dbf
+    function _toLower(string str) internal returns (string) {
+        bytes memory bStr = bytes(str);
+        bytes memory bLower = new bytes(bStr.length);
+        for (uint i = 0; i < bStr.length; i++) {
+            // Uppercase character...
+            if ((bStr[i] >= 65) && (bStr[i] <= 90)) {
+                // So we add 32 to make it lowercase
+                bLower[i] = bytes1(int(bStr[i]) + 32);
+            } else {
+                bLower[i] = bStr[i];
+            }
+        }
+        return string(bLower);
+    }
 }

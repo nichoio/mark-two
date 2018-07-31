@@ -1,0 +1,52 @@
+{% extends "list.html" %}
+
+{% block modals %}
+<div class="modal" id="solveModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">placeholder</h5>
+      </div>
+      <div class="modal-body">
+        <textarea class="form-control" rows="5" id="taskAnswer"></textarea>
+      </div>
+      <div class="modal-footer">
+        <small class="font-italic">Be aware that you cannot change your answer afterwards!</small>
+        <button type="button" id="saveAnswer" class="btn btn-primary" data-dismiss="modal">Save answer</button>
+        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Dismiss</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block headline %}Tasks with keyword "{{ keyword }}"{% endblock %}
+{% block subheadline %}List of all tasks which are tagged with the given keyword.{% endblock %}
+{% block tasks %}
+  {% for t in tasks %}
+    {% include "listitemsolve.html" %}
+  {% else %}
+    No tasks found having keyword "{{ keyword }}".
+  {% endfor %}
+{% endblock %}
+
+{% block scripts %}
+  <script>
+
+    var recentContract = null;
+
+    $(".solve").on( "click", function() {
+      //get the right question string from list...
+      var question = 
+        $(this).closest(".list-group-item").find("h5").html().split("&nbsp;")[0];
+      //...and set it as title for the pop-up dialog
+      $("#solveModal").find(".modal-title").text(question);
+
+      recentContract = $(this).closest(".list-group-item").attr("id");
+    });
+
+    $("#saveAnswer").on( "click", function() {
+      var answer = $("#taskAnswer").val();
+      app.solveTask(recentContract, answer);
+    });
+  </script>
+{% endblock %}
