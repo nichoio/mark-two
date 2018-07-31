@@ -1,11 +1,6 @@
 var app = new Object();
 
 app.web3Provider = null;
-// app.contracts = {};
-
-// app.init = function() {
-//   return app.initWeb3();
-// };
 
 app.initWeb3 = function() {
   // Is there an injected web3 instance?
@@ -20,9 +15,9 @@ app.initWeb3 = function() {
   web3 = new Web3(app.web3Provider);
 };
 
-//deploy new task with current Metamask user as sender
+//Deploy new task with current Metamask user as sender
 app.newTask = function(question, corrector, keyword, maxScore) {
-  $.getJSON("TaskABI.json", function(json) {
+  $.getJSON("/TaskABI.json", function(json) {
     $.get("Task.bin", function(bin) {
       var task = new web3.eth.Contract(json);
 
@@ -32,22 +27,56 @@ app.newTask = function(question, corrector, keyword, maxScore) {
           {from: accounts[0], gasPrice: '1000', gas: 2000000}).on(
           'receipt', function(receipt){
             app.postTask(receipt.contractAddress);
-        });  //TODO: refactor
+        });
+      });
+    });
+  });
+};
+
+//Solve an existing task with current Metamask user as sender
+app.solveTask = function(address, answer) {
+  console.log("SOLVE TASK");
+  $.getJSON("/TaskABI.json", function(json) {
+    var answerBytes = web3.utils.utf8ToHex(answer);
+    var task = new web3.eth.Contract(json, address);
+
+    web3.eth.getAccounts(function(error, accounts) {
+      task.methods.solve(answerBytes).send(
+          {from: accounts[0], gasPrice: '1000', gas: 2000000}).on(
+        'receipt', function(receipt){
+          //wait for transaction feedback/receipt
+          app.updateTestees(address, accounts[0]);
       });
     });
   });
 };
 
 app.postTask = function(contract) {
-  console.log("POST!!");
-  var path = 'create';  //POST to "create" route
+  console.log("Post task to DAPP backend.");
+  var path = '/create';  //POST to "create" route
   var form = $(
     '<form action="' + path + '" method="post">' +
-    '<input type="text" name="contract" value="' + contract + '" />' +
+    '<input type="hidden" name="contract" value="' + contract + '" />' +
     '</form>');
   $('body').append(form);
   form.submit();
 };
+
+app.updateTestees = function(contract, testee) {
+  console.log("Update testees at DAPP backend.");
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", '/update/answer', true);
+  xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+  xhr.onreadystatechange = function() { //Call a function when the state changes.
+      if(this.readyState == XMLHttpRequest.DONE && this.status == 200) {
+        console.log("ITS DONE!!!");
+        //TODO: refresh list now, should show "solved"
+      }
+  }
+
+  xhr.send("contract=" + contract + "&testee=" + testee);
+}
 
 $(window).on('load', function() {
   app.initWeb3();

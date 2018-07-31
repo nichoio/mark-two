@@ -84,6 +84,21 @@ app.get('/tasks/keyword/:keyword', function(req, res){
     });
 });
 
+app.post('/update/answer', function(req, res){
+    console.log("ANGEKOMMEN");
+
+    eth.getTaskAnswer(req.body.contract, req.body.testee)
+    .then(function(answer){
+        console.log("ANSWER as UTF-8:");
+        console.log(answer);
+        db.addTaskAnswer(req.body.contract, req.body.testee, answer)
+        .then(function(values){  //values don't need to be further processed
+            console.log("SENDE 200!");
+            res.sendStatus(200);
+        });
+    });
+});
+
 app.listen(port, () => {
     console.log("Express Listening at http://localhost:" + port);
 });

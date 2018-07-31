@@ -10,7 +10,7 @@ function addTask(json) {
     key = json.keyword;
     max = json.maxScore;
 
-    //check if task table already has an entry under this contract address
+    //check if Tasks table already has an entry under this contract address
     db.all("SELECT * FROM Tasks WHERE contract LIKE '" + con + "'", function(err, rows) {
         if (rows.length == 0){ //save this contract for the first time
             db.run(
@@ -59,8 +59,40 @@ function getTasksByKeyword(keyword) {
     });
 }
 
+function addTaskAnswer(contract, testee, answer) {
+    return new Promise(function (resolve, reject) {
+        db.all(
+            "SELECT * FROM Testees WHERE contract LIKE '" + contract + "'" +
+            "AND testee LIKE '" + testee + "'", function(err, rows) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(rows);
+            }
+        });
+    })
+    .then(function(rows){
+        //check if Testees table already has an answer saved for this task and this testee
+        if (rows.length == 0){ //save this answer at the first time
+            return db.run("INSERT INTO Testees (contract, testee, answer) " +
+                "VALUES ('" + contract + "', '" + testee + "', '" + String(answer) + "');");
+            console.log("Save new answer for Task: " + contract);
+            //TODO: only show this after transaction is confirmed
+        }
+        else if (rows.length == 1) return;  // don't save since it's already there
+        else { // should never happen hence let's exit
+            console.error(
+                "The following task plus testee combination is saved multiple times " + 
+                "(" + rows.length.toString() + " times) which is invalid in table Testees: " +
+                contract + ", " + testee);
+            process.exit(1); // terminate server
+        }
+    });    
+}
+
 module.exports = {
     addTask: addTask,
     getTasksByOwner: getTasksByOwner,
     getTasksByKeyword: getTasksByKeyword,
+    addTaskAnswer: addTaskAnswer,
 };

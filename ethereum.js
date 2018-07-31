@@ -16,6 +16,16 @@ function getTaskData(address) {
     return Promise.all([p1, p2, p3, p4, p5]);
 }
 
+function getTaskAnswer(address, testee) {
+    var task = new web3.eth.Contract(taskAbi, address);
+
+    return task.methods.answers(testee).call()
+    .then(function(res){
+        return web3.utils.hexToUtf8(res); //resolve bytes back to ASCII
+    });
+}
+
 module.exports = {
     getTaskData: getTaskData,
+    getTaskAnswer: getTaskAnswer,
 };
