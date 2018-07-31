@@ -10,8 +10,8 @@ contract Task {
     string public keyword;
     uint public maxScore;
 
-    mapping(address => bytes32) answers;
-    mapping(address => uint) scores;
+    mapping(address => bytes32) public answers;
+    mapping(address => uint) public scores;
     
     function Task(address _corrector, string _question, string _keyword, uint _maxScore){
         owner = msg.sender;
