@@ -17,8 +17,8 @@ app.initWeb3 = function() {
 
 //Deploy new task with current Metamask user as sender
 app.newTask = function(question, corrector, keyword, maxScore) {
-  $.getJSON("/TaskABI.json", function(json) {
-    $.get("Task.bin", function(bin) {
+  $.getJSON("/eth/TaskABI.json", function(json) {
+    $.get("/eth/Task.bin", function(bin) {
       var task = new web3.eth.Contract(json);
 
       web3.eth.getAccounts(function(error, accounts) {
@@ -35,8 +35,7 @@ app.newTask = function(question, corrector, keyword, maxScore) {
 
 //Solve an existing task with current Metamask user as sender
 app.solveTask = function(address, answer) {
-  console.log("SOLVE TASK");
-  $.getJSON("/TaskABI.json", function(json) {
+  $.getJSON("/eth/TaskABI.json", function(json) {
     var answerBytes = web3.utils.utf8ToHex(answer);
     var task = new web3.eth.Contract(json, address);
 

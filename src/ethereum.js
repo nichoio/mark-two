@@ -1,6 +1,6 @@
 const Web3 = require('web3');
 
-const taskAbi = require('./src/TaskABI.json');
+const taskAbi = require('./eth/TaskABI.json');
 
 var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:7545"));
 
