@@ -85,7 +85,7 @@ app.post('/update/answer', function(req, res){
         console.log("ANSWER as UTF-8:");
         console.log(answer);
         db.addTaskAnswer(req.body.contract, req.body.testee, answer)
-        .then(function(values){  //values don't need to be further processed
+        .then(function(){
             console.log("SENDE 200!");
             res.sendStatus(200);
         });
