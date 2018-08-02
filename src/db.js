@@ -1,7 +1,5 @@
 const sqlite3 = require('sqlite3');
 
-// var db = new sqlite3.Database('./mark_two_db.sqlt');
-
 class DB{
     constructor(dbName) {
         this.db = new sqlite3.Database(dbName);
@@ -18,12 +16,13 @@ class DB{
 
         return new Promise(function (resolve, reject) {
             //check if Tasks table already has an entry under this contract address
-            this.db.all("SELECT * FROM Tasks WHERE contract LIKE '" + con + "'", function(err, rows) {
+            var stmt = this.db.prepare("SELECT * FROM Tasks WHERE contract LIKE ?");
+            stmt.all([con], function(err, rows){
                 if (rows.length == 0){ //save this contract for the first time
-                    this.db.run(
+                    var stmt = this.db.prepare(
                         "INSERT INTO Tasks (contract, question, owner, corrector, keyword, maxscore)" +
-                        "VALUES ('" + con + "', '" + que + "', '" + own + "', '" +
-                        cor + "', '" + key + "', " + max + ");", function() {
+                        "VALUES (?, ?, ?, ?, ?, ?);");
+                    stmt.run([con, que, own, cor, key, max], function(){
                         console.log("Save new address to Tasks: " + con);
                         resolve();
                     });
@@ -42,8 +41,8 @@ class DB{
 
     getTasksByOwner(address) {
         return new Promise(function (resolve, reject) {
-            this.db.all(
-            "SELECT * FROM Tasks WHERE owner LIKE '" + address + "'", function(err, rows) {
+            var stmt = this.db.prepare("SELECT * FROM Tasks WHERE owner LIKE ?");
+            stmt.all([address], function(err, rows){
                 if (err) {
                     console.error(err);
                     process.exit(1);
@@ -55,10 +54,9 @@ class DB{
     }
 
     getTasksByKeyword(keyword) {
-        //TODO: Add SQL-injection protection
         return new Promise(function (resolve, reject) {
-            this.db.all(
-            "SELECT * FROM Tasks WHERE LOWER(keyword) LIKE '" + keyword + "'", function(err, rows) {
+            var stmt = this.db.prepare("SELECT * FROM Tasks WHERE LOWER(keyword) LIKE ?");
+            stmt.all([keyword], function(err, rows){
                 if (err) {
                     console.error(err);
                     process.exit(1);
@@ -71,9 +69,9 @@ class DB{
 
     addTaskAnswer(contract, testee, answer) {
         return new Promise(function (resolve, reject) {
-            this.db.all(
-                "SELECT * FROM Testees WHERE contract LIKE '" + contract + "'" +
-                "AND testee LIKE '" + testee + "'", function(err, rows) {
+            var stmt = this.db.prepare(
+                "SELECT * FROM Testees WHERE contract LIKE ? AND testee LIKE ?;");
+            stmt.all([contract, testee], function(err, rows){
                 if (err) {
                     reject(err);
                 } else {
@@ -84,10 +82,12 @@ class DB{
         .then(function(rows){
             //check if Testees table already has an answer saved for this task and this testee
             if (rows.length == 0){ //save this answer at the first time
-                return this.db.run("INSERT INTO Testees (contract, testee, answer) " +
-                    "VALUES ('" + contract + "', '" + testee + "', '" + answer + "');");
-                console.log("Save new answer for Task: " + contract);
-                //TODO: only show this after transaction is confirmed
+                var stmt = this.db.prepare(
+                    "INSERT INTO Testees (contract, testee, answer) " +
+                    "VALUES (?, ?, ?);");
+                stmt.run([contract, testee, answer], function(){
+                    console.log("Save new answer for Task: " + contract);
+                });
             }
             else if (rows.length == 1) return;  // don't save since it's already there
             else { // should never happen hence let's exit
