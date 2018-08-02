@@ -67,6 +67,20 @@ class DB{
         }.bind(this));
     }
 
+    getTaskDetails(address) {
+        return new Promise(function (resolve, reject) {
+            var stmt = this.db.prepare("SELECT * FROM Tasks WHERE contract LIKE ?");
+            stmt.all([address], function(err, rows){
+                if (err) {
+                    console.error(err);
+                    process.exit(1);
+                } else {
+                    resolve(rows[0]);
+                }
+            });
+        }.bind(this));        
+    }    
+
     addTaskAnswer(contract, testee, answer) {
         return new Promise(function (resolve, reject) {
             var stmt = this.db.prepare(
@@ -97,6 +111,20 @@ class DB{
                     contract + ", " + testee);
                 process.exit(1); // terminate server
             }
+        }.bind(this));    
+    }
+
+    getAnswersByTask(address) {
+        return new Promise(function (resolve, reject) {
+            var stmt = this.db.prepare("SELECT * FROM Testees WHERE contract LIKE ?");
+            stmt.all([address], function(err, rows){
+                if (err) {
+                    console.error(err);
+                    process.exit(1);
+                } else {
+                    resolve(rows);
+                }
+            });
         }.bind(this));    
     }
 }

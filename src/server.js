@@ -63,7 +63,7 @@ app.get('/tasks/owner/:owner', function(req, res){
             values[i].created_utc = values[i].created_utc.split(" ")[0];
         }
 
-        var ownerShort = req.params.owner.substring(0, 8) + '...'; 
+        var ownerShort = addressShort(req.params.owner);
         res.render('tasksowner.html', {tasks: values, ownerShort: ownerShort});
     });
 });
@@ -72,11 +72,37 @@ app.get('/tasks/keyword/:keyword', function(req, res){
     db.getTasksByKeyword(req.params.keyword)
     .then(function(values){
         for (let i = 0; i < values.length; i++) {
-            // YYYY-MM-DD HH:MM:SS -> YYYY-MM-DD
             values[i].created_utc = values[i].created_utc.split(" ")[0];
         }
 
         res.render('taskskeyword.html', {tasks: values, keyword: req.params.keyword});
+    });
+});
+
+app.get('/task/:address', function(req, res){
+    p1 = db.getTaskDetails(req.params.address);
+    p2 = db.getAnswersByTask(req.params.address);
+    return Promise.all([p1, p2])
+    .then(function(values) {
+        if (values[0]) {  //if there is a task under this address
+            var conShort = addressShort(values[0].contract);
+            var ownShort = addressShort(values[0].owner);
+            var corShort = addressShort(values[0].corrector);
+            values[0].created_utc = values[0].created_utc.split(" ")[0];
+            res.render(
+                'task.html',
+                {
+                    task: values[0],
+                    conShort: conShort,
+                    ownShort: ownShort,
+                    corShort: corShort,
+                    answers: values[1]
+                }
+            );
+        }
+        else{
+            res.status(404).send('Not found');
+        }
     });
 });
 
@@ -94,3 +120,7 @@ app.post('/update/answer', function(req, res){
 app.listen(port, () => {
     console.log("Express Listening at http://localhost:" + port);
 });
+
+function addressShort(address) {
+    return address.substring(0, 8) + '...';
+}
