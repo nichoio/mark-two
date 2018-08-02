@@ -6,11 +6,11 @@
   <div class="row border" id="taskInfo">
         <div class="col-lg-3 border-right">Address: {{conShort}}</div>
         <div class="col-lg-3 border-right">Owner: {{ownShort}}</div>
-        <div class="col-lg-3 border-right">Corrector: {{corShort}}</div>
+        <div class="col-lg-3 border-right" id="correctorInfo">Corrector: {{corShort}}</div>
         <div class="col-lg-3">Created at: {{task.created_utc}}</div>
   </div>
 
-  <div class="list-group">
+  <div class="list-group" id="answerList">
     {% for a in answers %}
       {% include "answeritem.html" %}
     {% else %}
@@ -19,4 +19,22 @@
   </div>
 {% endblock %}
 
-{% block scripts %}{% endblock %}
+{% block scripts %}
+<script>
+  app.account().then(function(acc){
+    if ('{{task.corrector}}'.toLowerCase() == acc){
+      $('#answerList').children().each(function(i) {
+        $(this).find(".scoreRow").append(
+          '<span class="float-right form-inline">' +
+          '<input class="form-control scoreInput"/>' +
+          '<button type="button"  class="btn btn-primary mark">' +
+          'Mark' +
+          '</button>' +
+          '</span>'
+        );
+      });
+      $('#correctorInfo').text('Corrector: You');
+    }
+  });
+</script>
+{% endblock %}

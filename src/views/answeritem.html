@@ -1,12 +1,12 @@
-<a href="#" class="list-group-item list-group-item-action flex-column">
+<div class="list-group-item flex-column">
   <h5 class="mb-1">Testee: {{ a.testee }}</h5>
   <p class="mb-1">Answer: {{ a.answer }}</p>
-  <p class="mb-1">
+  <p class="mb-1 scoreRow">
     Score:
     {% if a.score%}
-      {{a.score}} of {{task.maxscore}}
+      {{ a.score }} of {{ task.maxscore }}
     {% else %}
-      -
+      ? of {{ task.maxscore }}
     {% endif %}
   </p>
-</a>
+</div>
