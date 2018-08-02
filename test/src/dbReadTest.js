@@ -13,6 +13,7 @@ describe('dbRead', function(){
 
     before(function() {
         return new Promise(function (resolve) {
+            //create new DB
             const sqlite3CMD = spawn('sqlite3', [dbTestPath]);
 
             sqlite3CMD.stdout.on('data', (data) => {
@@ -23,6 +24,7 @@ describe('dbRead', function(){
               console.log(`stderr: ${data}`);
             });
 
+            //write to DB
             dbTest = new sqlite3.Database(dbTestPath);
             dbTest.serialize(function() {
                 dbTest.run(
@@ -75,6 +77,8 @@ describe('dbRead', function(){
 
     after(function() {
         dbTest.close();
+
+        //remove DB
         const rm = spawn('rm', [dbTestPath]);
 
         rm.stdout.on('data', (data) => {
