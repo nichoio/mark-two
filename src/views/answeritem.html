@@ -1,0 +1,12 @@
+<a href="#" class="list-group-item list-group-item-action flex-column">
+  <h5 class="mb-1">Testee: {{ a.testee }}</h5>
+  <p class="mb-1">Answer: {{ a.answer }}</p>
+  <p class="mb-1">
+    Score:
+    {% if a.score%}
+      {{a.score}} of {{task.maxscore}}
+    {% else %}
+      -
+    {% endif %}
+  </p>
+</a>
