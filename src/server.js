@@ -117,6 +117,21 @@ app.post('/update/answer', function(req, res){
     });
 });
 
+app.post('/update/score', function(req, res){
+    eth.getTaskScore(req.body.contract, req.body.testee)
+    .then(function(score){
+        console.log("DER SCORE IST:");
+        console.log(score);
+        db.addTaskScore(req.body.contract, req.body.testee, score)
+        .then(function(){
+            console.log("SENDE 200!");
+            res.sendStatus(200);
+        });
+    });
+});
+
+
+
 app.listen(port, () => {
     console.log("Express Listening at http://localhost:" + port);
 });

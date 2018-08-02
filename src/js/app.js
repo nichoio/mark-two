@@ -44,7 +44,7 @@ app.solveTask = function(address, answer) {
           {from: accounts[0], gasPrice: '1000', gas: 2000000}).on(
         'receipt', function(receipt){
           //wait for transaction feedback/receipt
-          app.updateTestees(address, accounts[0]);
+          app.setAnswer(address, accounts[0]);
       });
     });
   });
@@ -61,8 +61,8 @@ app.postTask = function(contract) {
   form.submit();
 };
 
-app.updateTestees = function(contract, testee) {
-  console.log("Update testees at DAPP backend.");
+app.setAnswer = function(contract, testee) {
+  console.log("order DAPP backend to set answer.");
   var xhr = new XMLHttpRequest();
   xhr.open("POST", '/update/answer', true);
   xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -83,6 +83,37 @@ app.account = function() {
       resolve(accounts[0]);
     });
   });
+};
+
+app.mark = function(address, testee, score){
+  $.getJSON("/eth/TaskABI.json", function(json) {
+    var task = new web3.eth.Contract(json, address);
+
+    web3.eth.getAccounts(function(error, accounts) {
+      task.methods.correct(testee, score).send(
+          {from: accounts[0], gasPrice: '1000', gas: 2000000}).on(
+        'receipt', function(receipt){
+          //wait for transaction feedback/receipt
+          app.updateScore(address, testee);
+      });
+    });
+  });  
+};
+
+app.updateScore = function(contract, testee) {
+  console.log("order DAPP backend to update score.");
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", '/update/score', true);
+  xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+  xhr.onreadystatechange = function() { //Call a function when the state changes.
+      if(this.readyState == XMLHttpRequest.DONE && this.status == 200) {
+        console.log("ITS DONE!!!");
+         location.reload(); // refresh page
+      }
+  };
+
+  xhr.send("contract=" + contract + "&testee=" + testee);
 };
 
 $(window).on('load', function() {

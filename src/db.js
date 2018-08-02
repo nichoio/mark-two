@@ -114,6 +114,40 @@ class DB{
         }.bind(this));    
     }
 
+    addTaskScore(contract, testee, score) {
+        return new Promise(function (resolve, reject) {
+            var stmt = this.db.prepare(
+                "SELECT * FROM Testees WHERE contract LIKE ? AND testee LIKE ?;");
+            stmt.all([contract, testee], function(err, rows){
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(rows);
+                }
+            });
+        }.bind(this))
+        .then(function(rows){
+            //check if Testees table already has an answer saved for this task and this testee
+            if (rows.length == 0) return; //don't save since there was no answer given.
+            else if (rows.length == 1) {
+                var stmt = this.db.prepare(
+                    "UPDATE Testees " +
+                    "SET score = ? " +
+                    "WHERE contract LIKE ? AND testee LIKE ?;");
+                stmt.run([score, contract, testee], function(){
+                    console.log("Save score for Task: " + contract);
+                });                
+            }
+            else { // should never happen hence let's exit
+                console.error(
+                    "The following task plus testee combination is saved multiple times " + 
+                    "(" + rows.length.toString() + " times) which is invalid in table Testees: " +
+                    contract + ", " + testee);
+                process.exit(1); // terminate server
+            }
+        }.bind(this));    
+    }
+
     getAnswersByTask(address) {
         return new Promise(function (resolve, reject) {
             var stmt = this.db.prepare("SELECT * FROM Testees WHERE contract LIKE ?");
