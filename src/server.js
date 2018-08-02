@@ -4,11 +4,14 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const nunjucks = require('nunjucks');
 
-const db = require('./db');
 const eth = require('./ethereum');
+const dbModule = require('./db');
 
 const port = 3000 || process.env.PORT;
 const app = express();
+const dbPath = './mark_two_db.sqlt';
+
+var db = new dbModule.DB(dbPath);
 
 nunjucks.configure(path.join(__dirname, 'views'), {
     express: app,
@@ -78,12 +81,8 @@ app.get('/tasks/keyword/:keyword', function(req, res){
 });
 
 app.post('/update/answer', function(req, res){
-    console.log("ANGEKOMMEN");
-
     eth.getTaskAnswer(req.body.contract, req.body.testee)
     .then(function(answer){
-        console.log("ANSWER as UTF-8:");
-        console.log(answer);
         db.addTaskAnswer(req.body.contract, req.body.testee, answer)
         .then(function(){
             console.log("SENDE 200!");
