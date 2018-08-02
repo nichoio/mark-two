@@ -72,10 +72,18 @@ app.updateTestees = function(contract, testee) {
         console.log("ITS DONE!!!");
         //TODO: refresh list now, should show "solved"
       }
-  }
+  };
 
   xhr.send("contract=" + contract + "&testee=" + testee);
-}
+};
+
+app.account = function() {
+  return new Promise(function (resolve, reject) {
+    web3.eth.getAccounts(function(error, accounts) {
+      resolve(accounts[0]);
+    });
+  });
+};
 
 $(window).on('load', function() {
   app.initWeb3();
