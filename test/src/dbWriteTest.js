@@ -13,6 +13,7 @@ describe('dbWrite', function(){
 
     before(function() {
         return new Promise(function (resolve) {
+            //create new DB
             const sqlite3CMD = spawn('sqlite3', [dbTestPath]);
 
             sqlite3CMD.stdout.on('data', (data) => {
@@ -41,6 +42,7 @@ describe('dbWrite', function(){
                 "keyword": "testkeyword",
                 "maxScore": "10"};
 
+            //write to DB
             dbTest.serialize(function() {
                 dbTest.run(
                     "CREATE TABLE Testees (contract TEXT NOT NULL, testee TEXT NOT NULL, " +
@@ -97,6 +99,8 @@ describe('dbWrite', function(){
 
     after(function() {
         dbTest.close();
+
+        //remove DB
         const rm = spawn('rm', [dbTestPath]);
 
         rm.stdout.on('data', (data) => {
