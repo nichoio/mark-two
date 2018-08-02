@@ -25,7 +25,13 @@ function getTaskAnswer(address, testee) {
     });
 }
 
+function getTaskScore(address, testee) {
+    var task = new web3.eth.Contract(taskAbi, address);
+    return task.methods.scores(testee).call();
+}
+
 module.exports = {
     getTaskData: getTaskData,
     getTaskAnswer: getTaskAnswer,
+    getTaskScore: getTaskScore,
 };
