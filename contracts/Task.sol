@@ -31,7 +31,8 @@ contract Task {
     function correct(address testee, uint score){
         require(
             corrector == msg.sender &&
-            score <= maxScore
+            score <= maxScore &&
+            answers[testee] != 0  //testee must have answered before
         );
 
         // overriding of existing scores is allowed
