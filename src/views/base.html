@@ -16,6 +16,7 @@
         <img src="/img/eth.svg" width="30" height="30" class="d-inline-block align-top" alt="">
         Mark²-DAPP
       </a>
+      <span class="float-right" id="userInfo">blub</span>
     </nav>
     <div class="container">
       <h1>{% block headline %}{% endblock %}</h1>
@@ -26,6 +27,21 @@
     <script src="/js/bootstrap.min.js"></script>
     <script src="/js/web3.min.js"></script>
     <script src="/js/app.js"></script>
-    {% block scripts %}{% endblock %}
+    <script>
+      var user; //TODO: use this globally
+      app.account().then(function(acc){
+        if(acc) {
+          $('#userInfo').text('Logged in as: ' + acc);
+        }
+        else{
+          $('#userInfo')
+          .text(
+            "You're not logged in with any Ethereum account!")
+          .addClass("font-italic");
+        }
+      });
+    </script>
+    {% block scripts %}
+    {% endblock %}
   </body>
 </html>

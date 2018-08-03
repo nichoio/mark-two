@@ -79,6 +79,9 @@ app.setAnswer = function(contract, testee) {
 
 app.account = function() {
   return new Promise(function (resolve, reject) {
+    if(typeof web3 == "undefined") {
+      resolve();  //return undefined
+    }
     web3.eth.getAccounts(function(error, accounts) {
       resolve(accounts[0]);
     });
