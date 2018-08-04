@@ -41,20 +41,24 @@
           //only append if there's no span for "pending" or final score yet
           if($(this).find('span').length == 0) {
             $(this).append(
+              '<a href="">' +
               '<button ' +
               'type="button" ' +
               'class="float-right btn btn-primary solve" ' +
               'data-toggle="modal" data-target="#solveModal"' +
               '>' +
               'Solve' +
-              '</button>'
+              '</button>' +
+              '</a>'
             );
           }
         });
       }
     })
     .then(function(acc){
-      $('.solve').on('click', function() {
+      $('.solve').on('click', function(event) {
+        event.preventDefault();
+
         //get the right question string from list...
         var question = 
           $(this).closest('.list-group-item').find('h5').html().split('&nbsp;')[0];

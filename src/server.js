@@ -25,10 +25,14 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
 
-app.use('/img', express.static(path.join(__dirname, 'img')))
-app.use('/css', express.static(path.join(__dirname, 'css')))
-app.use('/js', express.static(path.join(__dirname, 'js')))
-app.use('/eth', express.static(path.join(__dirname, 'eth')))
+app.use('/img', express.static(path.join(__dirname, 'img')));
+app.use('/css', express.static(path.join(__dirname, 'css')));
+app.use('/js', express.static(path.join(__dirname, 'js')));
+app.use('/eth', express.static(path.join(__dirname, 'eth')));
+
+app.get('/favicon.ico', function(req, res){
+    res.sendFile(path.join(__dirname, 'img', 'favicon.ico'));
+});
 
 app.get('/', function(req, res){
     res.render('index.html');

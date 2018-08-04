@@ -53,6 +53,16 @@ h6 {
 	margin-right: 10px;
 }
 
+.scorePending,
+.scorePending:hover,
+.scorePending:active {
+	background-color: #444444 !important; 
+}
+
+.keywordSpan{
+	cursor: pointer;
+}
+
 .scoreResult {
 	color: #ffffff;
 }

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block headline %}{{ task.question }}{% endblock %}
-{% block subheadline %}<span class="badge badge-info"">{{ task.keyword }}</span>{% endblock %}
+{% block subheadline %}<span class="badge badge-info keywordSpan">{{ task.keyword }}</span>{% endblock %}
 {% block content %}
   <div class="row border" id="taskInfo">
         <div class="col-lg-3 border-right">Address: {{conShort}}</div>
