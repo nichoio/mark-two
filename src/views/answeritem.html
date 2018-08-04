@@ -1,11 +1,12 @@
 <div class="list-group-item flex-column">
   <h5 class="mb-1 answerTestee">Testee: {{ a.testee }}</h5>
   <p class="mb-1">Answer: {{ a.answer }}</p>
-  <!--TODO: check behaviour if answer has multiple lines-->
   <p class="mb-1 scoreRow">
     Score:
     {% if a.score%}
-      {{ a.score }} of {{ task.maxscore }}
+      <span class="btn scoreResult scoreResultSmall">
+          {{ a.score }} of {{ task.maxscore }}
+      </span>
     {% else %}
       ? of {{ task.maxscore }}
     {% endif %}

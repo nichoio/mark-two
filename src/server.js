@@ -58,25 +58,31 @@ app.post('/create', function(req, res){
 app.get('/tasks/owner/:owner', function(req, res){
     db.getTasksByOwner(req.params.owner)
     .then(function(values){
-        for (let i = 0; i < values.length; i++) {
-            // YYYY-MM-DD HH:MM:SS -> YYYY-MM-DD
-            values[i].created_utc = values[i].created_utc.split(" ")[0];
-        }
-
+        values = utcsShorts(values);
         var ownerShort = addressShort(req.params.owner);
         res.render('tasksowner.html', {tasks: values, ownerShort: ownerShort});
     });
 });
 
 app.get('/tasks/keyword/:keyword', function(req, res){
-    db.getTasksByKeyword(req.params.keyword)
-    .then(function(values){
-        for (let i = 0; i < values.length; i++) {
-            values[i].created_utc = values[i].created_utc.split(" ")[0];
-        }
-
-        res.render('taskskeyword.html', {tasks: values, keyword: req.params.keyword});
-    });
+    if (req.query.testee) {
+        //look up tasks for this keyword plus answers and scores by given user
+        db.getTasksByKeywordTestee(req.params.keyword, req.query.testee)
+        .then(function(values){
+            values = utcsShorts(values);
+            res.render(
+                'taskskeyword.html',
+                {tasks: values, keyword: req.params.keyword, testee: req.query.testee});
+        }); 
+    }
+    else{
+        //just look up tasks for this keyword
+        db.getTasksByKeyword(req.params.keyword)
+        .then(function(values){
+            values = utcsShorts(values);
+            res.render('taskskeyword.html', {tasks: values, keyword: req.params.keyword});
+        });
+    }
 });
 
 app.get('/task/:address', function(req, res){
@@ -111,7 +117,6 @@ app.post('/update/answer', function(req, res){
     .then(function(answer){
         db.addTaskAnswer(req.body.contract, req.body.testee, answer)
         .then(function(){
-            console.log("SENDE 200!");
             res.sendStatus(200);
         });
     });
@@ -120,11 +125,8 @@ app.post('/update/answer', function(req, res){
 app.post('/update/score', function(req, res){
     eth.getTaskScore(req.body.contract, req.body.testee)
     .then(function(score){
-        console.log("DER SCORE IST:");
-        console.log(score);
         db.addTaskScore(req.body.contract, req.body.testee, score)
         .then(function(){
-            console.log("SENDE 200!");
             res.sendStatus(200);
         });
     });
@@ -138,4 +140,12 @@ app.listen(port, () => {
 
 function addressShort(address) {
     return address.substring(0, 8) + '...';
+}
+
+function utcsShorts(values) {
+    for (let i = 0; i < values.length; i++) {
+        // YYYY-MM-DD HH:MM:SS -> YYYY-MM-DD
+        values[i].created_utc = values[i].created_utc.split(" ")[0];
+    }
+    return values;
 }

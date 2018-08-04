@@ -23,7 +23,7 @@
 <script>
   app.account().then(function(acc){
     if ('{{task.corrector}}'.toLowerCase() == acc){
-      $('#answerList').children().each(function(i) {
+      $('#answerList').children().each(function() {
         $(this).find(".scoreRow").append(
           '<span class="float-right form-inline">' +
           '<input class="form-control scoreInput"/>' +
@@ -39,7 +39,6 @@
         }
       });
       $('#correctorInfo').text('Corrector: You');
-      //TODO: test once as non corrector if i can mark
     }
   })
   .then(function(){
@@ -47,15 +46,31 @@
       var contract = '{{task.contract}}';
       var testee = $(this).closest('.list-group-item').find('.answerTestee').text().split(' ')[1];
       var score = parseInt($(this).siblings('.scoreInput').val());
-      console.log("DER CONTRACT:");
-      console.log(contract);
-      console.log("DER TESTEE:");
-      console.log(testee);
-      console.log("DER SCORE:");
-      console.log(score);
 
       app.mark(contract, testee, score);
     });
+  });
+
+  $('.scoreResult').each(function() {
+    var score = parseInt($(this).text().trim().split(' ')[0]);
+    var maxScore = parseInt($(this).text().trim().split(' ')[2]);
+    percentage = score/maxScore;
+
+    if (0.85 < percentage){
+      $(this).addClass('great');
+    }
+    else if (0.85 > percentage && percentage >= 0.7){
+      $(this).addClass('good');
+    }
+    else if (0.7 > percentage && percentage >= 0.55){
+      $(this).addClass('ok');
+    }
+    else if (0.55 > percentage && percentage >= 0.4){
+      $(this).addClass('bad');
+    }
+    else {
+      $(this).addClass('fail');
+    }
   });
 
 </script>

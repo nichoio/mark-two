@@ -7,7 +7,7 @@
       <div class="modal-header">
         <h5 class="modal-title">placeholder</h5>
       </div>
-      <div class="modal-body">
+      <div class="modal-body solveModalBody">
         <textarea class="form-control" rows="5" id="taskAnswer"></textarea>
       </div>
       <div class="modal-footer">
@@ -20,7 +20,10 @@
 </div>
 {% endblock %}
 {% block headline %}Tasks with keyword "{{ keyword }}"{% endblock %}
-{% block subheadline %}List of all tasks which are tagged with the given keyword.{% endblock %}
+{% block subheadline %}
+  List of all tasks which are tagged with the given keyword.
+  Use this view to solve tasks.
+{% endblock %}
 {% block tasks %}
   {% for t in tasks %}
     {% include "listitemsolve.html" %}
@@ -31,22 +34,67 @@
 
 {% block scripts %}
   <script>
+    app.account()
+    .then(function(acc){
+      if (acc == '{{testee}}') {
+        $('.keywordCorrector').each(function() {
+          //only append if there's no span for "pending" or final score yet
+          if($(this).find('span').length == 0) {
+            $(this).append(
+              '<button ' +
+              'type="button" ' +
+              'class="float-right btn btn-primary solve" ' +
+              'data-toggle="modal" data-target="#solveModal"' +
+              '>' +
+              'Solve' +
+              '</button>'
+            );
+          }
+        });
+      }
+    })
+    .then(function(acc){
+      $('.solve').on('click', function() {
+        //get the right question string from list...
+        var question = 
+          $(this).closest('.list-group-item').find('h5').html().split('&nbsp;')[0];
+        //...and set it as title for the pop-up dialog
+        $('#solveModal').find('.modal-title').text(question);
 
-    var recentContract = null;
-
-    $(".solve").on( "click", function() {
-      //get the right question string from list...
-      var question = 
-        $(this).closest(".list-group-item").find("h5").html().split("&nbsp;")[0];
-      //...and set it as title for the pop-up dialog
-      $("#solveModal").find(".modal-title").text(question);
-
-      recentContract = $(this).closest(".list-group-item").attr("id");
+        //it's hard to set a global var from inside "then".
+        //instead return this data by writing it to an arbitrary id
+        $('.solveModalBody').attr('id', $(this).closest('.list-group-item').attr('id'));
+      });
     });
 
-    $("#saveAnswer").on( "click", function() {
-      var answer = $("#taskAnswer").val();
-      app.solveTask(recentContract, answer);
+    $('#saveAnswer').on( 'click', function() {
+      var answer = $('#taskAnswer').val();
+
+      //retrieve contract address from id
+      app.solveTask($('.solveModalBody').attr('id'), answer);
     });
+
+    $('.scoreResult').each(function() {
+      var score = parseInt($(this).text().trim().split(' ')[0]);
+      var maxScore = parseInt($(this).text().trim().split(' ')[2]);
+      percentage = score/maxScore;
+
+      if (0.85 < percentage){
+        $(this).addClass('great');
+      }
+      else if (0.85 > percentage && percentage >= 0.7){
+        $(this).addClass('good');
+      }
+      else if (0.7 > percentage && percentage >= 0.55){
+        $(this).addClass('ok');
+      }
+      else if (0.55 > percentage && percentage >= 0.4){
+        $(this).addClass('bad');
+      }
+      else {
+        $(this).addClass('fail');
+      }
+    });
+
   </script>
 {% endblock %}
