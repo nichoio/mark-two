@@ -3,11 +3,37 @@ h6 {
 }
 
 .navbar {
-	border-bottom: 2px solid;
+	border-bottom: 1px solid;
 	margin-bottom: 20px;
 }
 
-/* Bootstrap 4 */
+.nav-item {
+	margin-right: 15px;
+}
+
+.nav-item :not(.disabled){	
+	cursor: pointer;
+}
+
+.nav-link {
+	color: #555555 !important;
+}
+
+.nav-link:hover,
+.nav-link:active,
+.nav-link:focus {
+	color: #000000 !important;
+}
+
+.nav-link.disabled {
+	color: #aaaaaa !important;
+}
+
+.nav-link.disabled:hover,
+.nav-link.disabled:active,
+.nav-link.disabled:focus {
+	color: #aaaaaa !important;
+}
 
 .btn-primary, .btn-primary:visited {
 	background-color: #444444; 
@@ -54,6 +80,10 @@ h6 {
 
 .scoreResultSmall {
 	padding: .075rem .45rem;
+}
+
+#gotoKeyword {
+	margin-left: 60px;
 }
 
 #taskInfo {
