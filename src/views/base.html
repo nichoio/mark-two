@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>Mark^2</title>
+    <link rel="icon" href="/favicon.ico"/>
     <link href="/css/bootstrap.min.css" rel="stylesheet">
     <link href="/css/style.css" rel="stylesheet">
   </head>
@@ -87,6 +88,13 @@
           $('#gotoKeyword').on('click', function() {
             var keyword = $('#keywordInput').val();
             if (keyword) window.open('/tasks/keyword/' + keyword + '?testee=' + acc, '_self');
+          });
+
+          //global listeners for keyword badges
+          $('.keywordSpan').on('click', function(e) {
+            event.preventDefault();
+            var keyword = $(this).text();
+            window.open('/tasks/keyword/' + keyword + '?testee=' + acc, '_self');
           });
         }
       });

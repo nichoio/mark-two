@@ -69,8 +69,7 @@ app.setAnswer = function(contract, testee) {
 
   xhr.onreadystatechange = function() { //Call a function when the state changes.
       if(this.readyState == XMLHttpRequest.DONE && this.status == 200) {
-        console.log("ITS DONE!!!");
-        //TODO: refresh list now, should show "solved"
+        location.reload(); // refresh page
       }
   };
 
@@ -111,7 +110,6 @@ app.updateScore = function(contract, testee) {
 
   xhr.onreadystatechange = function() { //Call a function when the state changes.
       if(this.readyState == XMLHttpRequest.DONE && this.status == 200) {
-        console.log("ITS DONE!!!");
          location.reload(); // refresh page
       }
   };

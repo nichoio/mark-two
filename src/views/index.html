@@ -1,5 +1,20 @@
 {% extends "base.html" %}
 
+{% block headline %}Welcome to Mark²!{% endblock %}
+{% block subheadline %}...bringing assignments, exams and marks to the Blockchain{% endblock %}
 {% block content %}
-<h1>Welcome to Mark^2</h1>
+{% endblock %}
+{% block scripts %}
+  <script>
+    //TODO: write 2 texts with Emojis, buttons etc
+    app.account()
+    .then(function(acc){
+      if(acc) {
+        $('.container').append();
+      }
+      else{
+        $('.container').append();
+      }
+    });
+  </script>
 {% endblock %}
