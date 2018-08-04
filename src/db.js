@@ -55,7 +55,8 @@ class DB{
 
     getTasksByKeyword(keyword) {
         return new Promise(function (resolve, reject) {
-            var stmt = this.db.prepare("SELECT * FROM Tasks WHERE LOWER(keyword) LIKE ?");
+            //use "con" column as in getTasksByKeywordTestee()
+            var stmt = this.db.prepare("SELECT Tasks.contract AS con, * FROM Tasks WHERE LOWER(keyword) LIKE ?;");
             stmt.all([keyword], function(err, rows){
                 if (err) {
                     console.error(err);
@@ -67,9 +68,29 @@ class DB{
         }.bind(this));
     }
 
+    getTasksByKeywordTestee(keyword, testee) {
+        return new Promise(function (resolve, reject) {
+            //use "con" column because LEFT JOIN makes joined column null if join fails
+            var stmt = this.db.prepare(
+                "SELECT Tasks.contract AS con, * FROM Tasks " +
+                "LEFT JOIN Testees ON Tasks.contract = Testees.contract " +
+                "AND Testees.testee LIKE ? " +
+                "WHERE LOWER(Tasks.keyword) LIKE ?;"
+            );
+            stmt.all([testee, keyword], function(err, rows){
+                if (err) {
+                    console.error(err);
+                    process.exit(1);
+                } else {
+                    resolve(rows);
+                }
+            });
+        }.bind(this));
+    }    
+
     getTaskDetails(address) {
         return new Promise(function (resolve, reject) {
-            var stmt = this.db.prepare("SELECT * FROM Tasks WHERE contract LIKE ?");
+            var stmt = this.db.prepare("SELECT * FROM Tasks WHERE contract LIKE ?;");
             stmt.all([address], function(err, rows){
                 if (err) {
                     console.error(err);

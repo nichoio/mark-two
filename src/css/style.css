@@ -22,6 +22,40 @@ h6 {
 	box-shadow: none !important; 
 }
 
+.scoreInput {
+	width: 60px !important;
+	margin-right: 10px;
+}
+
+.scoreResult {
+	color: #ffffff;
+}
+
+.scoreResult.great {
+	background-color: #2d892c;
+}
+
+.scoreResult.good {
+	background-color: #60dd5f;
+}
+
+.scoreResult.ok {
+	background-color: #fff544;
+	color: #000000;
+}
+
+.scoreResult.bad {
+	background-color: #f9a236;
+}
+
+.scoreResult.fail {
+	background-color: #ff0000;
+}
+
+.scoreResultSmall {
+	padding: .075rem .45rem;
+}
+
 #taskInfo {
 	padding-top: 5px;
 	padding-bottom: 5px;
@@ -31,7 +65,6 @@ h6 {
 	margin-right: 0px;
 }
 
-.scoreInput {
-	width: 60px !important;
-	margin-right: 10px;
+#keywordInput {
+	width: 150px !important;
 }

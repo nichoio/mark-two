@@ -1,16 +1,18 @@
-<div class="list-group-item list-group-item-action flex-column" id="{{t.contract}}">
+<div class="list-group-item list-group-item-action flex-column" id="{{t.con}}">
   <div class="d-flex w-100 justify-content-between">
     <h5 class="mb-1">{{ t.question }}&nbsp;&nbsp;<span class="badge badge-info"">{{ t.keyword }}</span></h5>
     {{t.created_utc}}
   </div>
-  <p class="mb-1">Address: {{ t.contract }}</p>
-  <p class="mb-1">Corrector: {{ t.corrector }}
-    <button
-      type="button"
-      class="float-right btn btn-primary solve"
-      data-toggle="modal" data-target="#solveModal"
-    >
-      Solve
-    </button>
+  <p class="mb-1">Address: {{ t.con }}</p>
+  <p class="mb-1 keywordCorrector">Corrector: {{ t.corrector }}
+    {% if t.score or (t.score == 0) %}
+      <span class="float-right btn scoreResult">
+        {{ t.score }} of {{t.maxscore}}
+      </span>
+    {% elif t.answer %}
+      <span class="float-right btn btn-primary scorePending">
+        Correction pending
+      </span>
+    {% endif %}
   </p>
 </div>
