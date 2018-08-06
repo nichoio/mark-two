@@ -37,7 +37,7 @@
     app.account()
     .then(function(acc){
       if (acc == '{{testee}}') {
-        $('.keywordCorrector').each(function() {
+        $('.keywordAnswer').each(function() {
           //only append if there's no span for "pending" or final score yet
           if($(this).find('span').length == 0) {
             $(this).append(
