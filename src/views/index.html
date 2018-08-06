@@ -1,19 +1,52 @@
 {% extends "base.html" %}
 
 {% block headline %}Welcome to Mark²!{% endblock %}
-{% block subheadline %}...bringing assignments, exams and marks to the Blockchain{% endblock %}
+{% block subheadline %}
+  ...bringing assignments, exams and marks to the Blockchain &#x1F680
+{% endblock %}
 {% block content %}
+  <div id="indexContent">
+    With Mark² you can create, solve and correct assignments - and all of this on the blockchain.
+    Moreover it allows you to correct these assignments
+    in exchange for MarkCoins &#x1F4B0 - our own token solely issued for this application.
+    <p>Our solution is powered by the well established Ethereum blockchain.</p>
+    <br/>
+    The benefits of using Ethereum:
+     <ul>
+      <li>It's impossible to delete any assignments or solutions</li>
+      <li>It's impossible to manipulate grades as a 3rd person</li>
+      <li>It's impossible to get cheated on your MarkCoin rewards</li>
+    </ul>
+    <p>And by "impossible" we mean literally IMPOSSIBLE!! &#x1F60E</p>
+    <br/>
+  </div>
 {% endblock %}
 {% block scripts %}
   <script>
-    //TODO: write 2 texts with Emojis, buttons etc
     app.account()
     .then(function(acc){
       if(acc) {
-        $('.container').append();
+        $('#indexContent').append(
+          'Some things you can do here:' +
+          '<ul>' +
+          '<li><a href="/create">Create</a> new assignments and delegate the correction to others</li>' +
+          '<li>Answer existing assignments</li>' +
+          '<li>Correct answers (and earn MarkCoin!)</li>' +
+          '</ul>' +
+          '<p>' +
+          'In order to do so, you can also you the navigation bar at the top of the page.' +
+          'To solve assignments, you have to look up the keyword which belongs' +
+          'to the regarding assignment(s).' +
+          '</p>'
+        );
       }
       else{
-        $('.container').append();
+        $('#indexContent').append(
+          'You are currently not logged in with an Ethereum wallet. ' +
+          'You\'ll need the Metamask plugin for Firefox and Chrome or ' +
+          'an Ethereum compatible browser like Mist to access your Ethereum accounts. ' +
+          'Without you cannot use this app!'
+        );
       }
     });
   </script>
