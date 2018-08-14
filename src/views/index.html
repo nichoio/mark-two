@@ -23,31 +23,33 @@
 {% endblock %}
 {% block scripts %}
   <script>
-    app.account()
-    .then(function(acc){
-      if(acc) {
-        $('#indexContent').append(
-          'Some things you can do here:' +
-          '<ul>' +
-          '<li><a href="/create">Create</a> new assignments and delegate the correction to others</li>' +
-          '<li>Answer existing assignments</li>' +
-          '<li>Correct answers (and earn MarkCoin!)</li>' +
-          '</ul>' +
-          '<p>' +
-          'In order to do so, you can also you the navigation bar at the top of the page.' +
-          'To solve assignments, you have to look up the keyword which belongs' +
-          'to the regarding assignment(s).' +
-          '</p>'
-        );
-      }
-      else{
-        $('#indexContent').append(
-          'You are currently not logged in with an Ethereum wallet. ' +
-          'You\'ll need the Metamask plugin for Firefox and Chrome or ' +
-          'an Ethereum compatible browser like Mist to access your Ethereum accounts. ' +
-          'Without you cannot use this app!'
-        );
-      }
+    $(window).on('load', function() {
+      app.account()
+      .then(function(acc){
+        if(acc) {
+          $('#indexContent').append(
+            'Some things you can do here:' +
+            '<ul>' +
+            '<li><a href="/create">Create</a> new assignments and delegate the correction to others</li>' +
+            '<li>Answer existing assignments</li>' +
+            '<li>Correct answers (and earn MarkCoin!)</li>' +
+            '</ul>' +
+            '<p>' +
+            'In order to do so, use the navigation bar at the top of the page. ' +
+            'To solve assignments, you have to look up the keyword which belongs ' +
+            'to the regarding assignment(s).' +
+            '</p>'
+          );
+        }
+        else{
+          $('#indexContent').append(
+            'You are currently not logged in with an Ethereum wallet. ' +
+            'You\'ll need the Metamask plugin for Firefox and Chrome or ' +
+            'an Ethereum compatible browser like Mist to access your Ethereum accounts. ' +
+            'Without you cannot use this app!'
+          );
+        }
+      });
     });
   </script>
 {% endblock %}
