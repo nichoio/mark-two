@@ -1,8 +1,9 @@
 const Web3 = require('web3');
 
 const taskAbi = require('./eth/TaskABI.json');
+const providers = require('./../secrets/providers.json');
 
-var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:7545"));
+var web3 = new Web3(new Web3.providers.HttpProvider(providers.ropsten));
 
 function getTaskData(address) {
     var task = new web3.eth.Contract(taskAbi, address);
