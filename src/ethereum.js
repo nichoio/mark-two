@@ -18,11 +18,7 @@ function getTaskData(address) {
 
 function getTaskAnswer(address, testee) {
     var task = new web3.eth.Contract(taskAbi, address);
-
-    return task.methods.answers(testee).call()
-    .then(function(res){
-        return web3.utils.hexToUtf8(res); //resolve bytes back to ASCII
-    });
+    return task.methods.answers(testee).call();
 }
 
 function getTaskScore(address, testee) {
