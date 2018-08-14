@@ -6,7 +6,7 @@ app.initWeb3 = function() {
   // Is there an injected web3 instance?
   if (typeof web3 !== 'undefined') {
     app.web3Provider = web3.currentProvider;
-    console.log("Use Metamask provider.");
+    console.log("Use injected/Metamask provider.");
   } else {
     // If no injected web3 instance is detected, fall back to Ganache
     app.web3Provider = new Web3.providers.HttpProvider('http://localhost:7545');
@@ -36,11 +36,10 @@ app.newTask = function(question, corrector, keyword, maxScore) {
 //Solve an existing task with current Metamask user as sender
 app.solveTask = function(address, answer) {
   $.getJSON("/eth/TaskABI.json", function(json) {
-    var answerBytes = web3.utils.utf8ToHex(answer);
     var task = new web3.eth.Contract(json, address);
 
     web3.eth.getAccounts(function(error, accounts) {
-      task.methods.solve(answerBytes).send(
+      task.methods.solve(answer).send(
           {from: accounts[0], gasPrice: '1000', gas: 2000000}).on(
         'receipt', function(receipt){
           //wait for transaction feedback/receipt

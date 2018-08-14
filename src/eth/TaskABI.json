@@ -39,7 +39,7 @@
     "outputs": [
       {
         "name": "",
-        "type": "bytes32"
+        "type": "string"
       }
     ],
     "payable": false,
@@ -135,7 +135,7 @@
     "inputs": [
       {
         "name": "answer",
-        "type": "bytes32"
+        "type": "string"
       }
     ],
     "name": "solve",
