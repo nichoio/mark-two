@@ -34,70 +34,72 @@
 
 {% block scripts %}
   <script>
-    app.account()
-    .then(function(acc){
-      if (acc == '{{testee}}') {
-        $('.keywordAnswer').each(function() {
-          //only append if there's no span for "pending" or final score yet
-          if($(this).find('span').length == 0) {
-            $(this).append(
-              '<a href="">' +
-              '<button ' +
-              'type="button" ' +
-              'class="float-right btn btn-primary solve" ' +
-              'data-toggle="modal" data-target="#solveModal"' +
-              '>' +
-              'Solve' +
-              '</button>' +
-              '</a>'
-            );
-          }
+    $(window).on('load', function() {
+      app.account()
+      .then(function(acc){
+        if (acc == '{{testee}}') {
+          $('.keywordAnswer').each(function() {
+            //only append if there's no span for "pending" or final score yet
+            if($(this).find('span').length == 0) {
+              $(this).append(
+                '<a href="">' +
+                '<button ' +
+                'type="button" ' +
+                'class="float-right btn btn-primary solve" ' +
+                'data-toggle="modal" data-target="#solveModal"' +
+                '>' +
+                'Solve' +
+                '</button>' +
+                '</a>'
+              );
+            }
+          });
+        }
+      })
+      .then(function(acc){
+        $('.solve').on('click', function(event) {
+          event.preventDefault();
+
+          //get the right question string from list...
+          var question = 
+            $(this).closest('.list-group-item').find('h5').html().split('&nbsp;')[0];
+          //...and set it as title for the pop-up dialog
+          $('#solveModal').find('.modal-title').text(question);
+
+          //it's hard to set a global var from inside "then".
+          //instead return this data by writing it to an arbitrary id
+          $('.solveModalBody').attr('id', $(this).closest('.list-group-item').attr('id'));
         });
-      }
-    })
-    .then(function(acc){
-      $('.solve').on('click', function(event) {
-        event.preventDefault();
-
-        //get the right question string from list...
-        var question = 
-          $(this).closest('.list-group-item').find('h5').html().split('&nbsp;')[0];
-        //...and set it as title for the pop-up dialog
-        $('#solveModal').find('.modal-title').text(question);
-
-        //it's hard to set a global var from inside "then".
-        //instead return this data by writing it to an arbitrary id
-        $('.solveModalBody').attr('id', $(this).closest('.list-group-item').attr('id'));
       });
-    });
 
-    $('#saveAnswer').on( 'click', function() {
-      var answer = $('#taskAnswer').val();
+      $('#saveAnswer').on( 'click', function() {
+        var answer = $('#taskAnswer').val();
 
-      //retrieve contract address from id
-      app.solveTask($('.solveModalBody').attr('id'), answer);
-    });
+        //retrieve contract address from id
+        app.solveTask($('.solveModalBody').attr('id'), answer);
+      });
 
-    $('.scoreResult').each(function() {
-      var score = parseInt($(this).text().trim().split(' ')[0]);
-      var maxScore = parseInt($(this).text().trim().split(' ')[2]);
-      percentage = score/maxScore;
+      $('.scoreResult').each(function() {
+        var score = parseInt($(this).text().trim().split(' ')[0]);
+        var maxScore = parseInt($(this).text().trim().split(' ')[2]);
+        percentage = score/maxScore;
 
-      if (0.85 < percentage){
-        $(this).addClass('great');
-      }
-      else if (0.85 > percentage && percentage >= 0.7){
-        $(this).addClass('good');
-      }
-      else if (0.7 > percentage && percentage >= 0.55){
-        $(this).addClass('ok');
-      }
-      else if (0.55 > percentage && percentage >= 0.4){
-        $(this).addClass('bad');
-      }
-      else {
-        $(this).addClass('fail');
-      }
+        if (0.85 < percentage){
+          $(this).addClass('great');
+        }
+        else if (0.85 > percentage && percentage >= 0.7){
+          $(this).addClass('good');
+        }
+        else if (0.7 > percentage && percentage >= 0.55){
+          $(this).addClass('ok');
+        }
+        else if (0.55 > percentage && percentage >= 0.4){
+          $(this).addClass('bad');
+        }
+        else {
+          $(this).addClass('fail');
+        }
+      });
     });
 
   </script>

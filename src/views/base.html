@@ -57,46 +57,49 @@
     <script src="/js/web3.min.js"></script>
     <script src="/js/app.js"></script>
     <script>
-      app.account()
-      .then(function(acc){
-        if(acc) {
-          $('#userInfo').text('Logged in as: ' + acc);
-          return acc;
-        }
-        else{
-          $('#userInfo')
-          .text(
-            "You're not logged in with any Ethereum account!")
-          .addClass("font-italic");
-          return null;
-        }
-      })
-      .then(function(acc){
-        if(acc) {  //only enable nav buttons if logged in with eth account
-          $('#gotoCreate').removeClass('disabled');
-          $('#gotoOwned').removeClass('disabled');
-          $('#gotoKeyword').removeClass('disabled');
+      $(window).on('load', function() {
+        app.account()
+        .then(function(acc){
+          if(acc) {
+            $('#userInfo').text('Logged in as: ' + acc);
+            return acc;
+          }
+          else{
+            $('#userInfo')
+            .text(
+              "You're not logged in with any Ethereum account!")
+            .addClass("font-italic");
+            return null;
+          }
+        })
+        .then(function(acc){
+          if(acc) {  //only enable nav buttons if logged in with eth account
+            $('#gotoCreate').removeClass('disabled');
+            $('#gotoOwned').removeClass('disabled');
+            $('#gotoKeyword').removeClass('disabled');
 
-          $('#gotoCreate').on('click', function() {
-            window.open('/create', '_self');
-          });
+            $('#gotoCreate').on('click', function() {
+              window.open('/create', '_self');
+            });
 
-          $('#gotoOwned').on('click', function() {
-            window.open("/tasks/owner/" + acc,'_self');
-          });
+            $('#gotoOwned').on('click', function() {
+              window.open("/tasks/owner/" + acc,'_self');
+            });
 
-          $('#gotoKeyword').on('click', function() {
-            var keyword = $('#keywordInput').val();
-            if (keyword) window.open('/tasks/keyword/' + keyword + '?testee=' + acc, '_self');
-          });
+            $('#gotoKeyword').on('click', function() {
+              var keyword = $('#keywordInput').val();
+              if (keyword) window.open('/tasks/keyword/' + keyword + '?testee=' + acc, '_self');
+            });
 
-          //global listeners for keyword badges
-          $('.keywordSpan').on('click', function(e) {
-            event.preventDefault();
-            var keyword = $(this).text();
-            window.open('/tasks/keyword/' + keyword + '?testee=' + acc, '_self');
-          });
-        }
+            //global listeners for keyword badges
+            //if someone is not logged in, keyword links will not work for this user!
+            $('.keywordSpan').on('click', function(e) {
+              event.preventDefault();
+              var keyword = $(this).text();
+              window.open('/tasks/keyword/' + keyword + '?testee=' + acc, '_self');
+            });
+          }
+        });
       });
     </script>
     {% block scripts %}
