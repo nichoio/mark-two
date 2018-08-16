@@ -20,8 +20,13 @@
       </span>
     {% elif t.answer %}
       {{ t.answer }}
-      <span class="float-right btn btn-primary scorePending">
+      <span class="float-right btn btn-primary disabledButton">
         Correction pending
+      </span>
+    {% elif t.testee %}
+      -
+      <span class="float-right btn btn-primary disabledButton">
+        Processing answer
       </span>
     {% else %}
       -

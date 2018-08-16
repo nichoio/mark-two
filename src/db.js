@@ -191,17 +191,16 @@ class DB{
             });
         }.bind(this))
         .then(function(rows){
-            //check if Answers table already has an answer saved for this task and this testee
-            if (rows.length == 0){ //save this answer at the first time
+            if (rows.length == 1){ //override null placeholder with answer string
                 var stmt = this.db.prepare(
-                    "INSERT INTO Answers (contract, testee, answer) " +
-                    "VALUES (?, ?, ?);");
-                stmt.run([contract, testee, answer], function(){
-                    console.log("Save new answer for Task: " + contract);
+                    "UPDATE Answers " +
+                    "SET answer = ? " +
+                    "WHERE contract LIKE ? AND testee LIKE ?;");
+                stmt.run([answer, contract, testee], function(){
+                    console.log("Save answer string for Task: " + contract);
                 });
             }
-            else if (rows.length == 1) return;  // don't save since it's already there
-            else { // should never happen hence let's exit
+            else if (rows.length > 1) { //should never happen hence let's exit
                 console.error(
                     "The following task plus testee combination is saved multiple times " + 
                     "(" + rows.length.toString() + " times) which is invalid in table Answers: " +
@@ -211,7 +210,103 @@ class DB{
         }.bind(this));    
     }
 
-    updateTaskScore(contract, testee, score) {
+    addBlankAnswer(contract, testee) {
+        return new Promise(function (resolve, reject) {
+            var stmt = this.db.prepare(
+                "SELECT * FROM Answers WHERE contract LIKE ? AND testee LIKE ?;");
+            stmt.all([contract, testee], function(err, rows){
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(rows);
+                }
+            });
+        }.bind(this))
+        .then(function(rows){
+            //check if Answers table already has an answer saved for this task and this testee
+            if (rows.length == 0){ //save this answer at the first time
+                var stmt = this.db.prepare(
+                    "INSERT INTO Answers (contract, testee) " +
+                    "VALUES (?, ?);");
+                stmt.run([contract, testee], function(){
+                    console.log("Save new answer placeholder for Task: " + contract);
+                });
+            }
+            else if (rows.length == 1) return; //don't save since it's already there
+            else { //should never happen hence let's exit
+                console.error(
+                    "The following task plus testee combination is saved multiple times " + 
+                    "(" + rows.length.toString() + " times) which is invalid in table Answers: " +
+                    contract + ", " + testee);
+                process.exit(1); //terminate server
+            }
+        }.bind(this));    
+    }
+
+    getBlankAnswers(){
+        return new Promise(function (resolve, reject) {
+            var stmt = this.db.all(
+                "SELECT * FROM Answers WHERE answer IS NULL;", function(err, rows){
+                if (err) {
+                    console.error(err);
+                    process.exit(1);
+                } else {
+                    resolve(rows);
+                }
+            });
+        }.bind(this)); 
+    }
+
+    //sets an score as unconfirmed, thus a transaction updating this score is currently under way
+    updateUnconfirmedScore(contract, testee) {
+        console.log("UNCONFIRM SCORE");
+        return new Promise(function (resolve, reject) {
+            var stmt = this.db.prepare(
+                "SELECT * FROM Answers WHERE contract LIKE ? AND testee LIKE ?;");
+            stmt.all([contract, testee], function(err, rows){
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(rows);
+                }
+            });
+        }.bind(this))
+        .then(function(rows){
+            if (rows.length == 1){ //set flag for unconfirmed score
+                var stmt = this.db.prepare(
+                    "UPDATE Answers " +
+                    "SET scoreConfirmed = 0 " +
+                    "WHERE contract LIKE ? AND testee LIKE ?;");
+                stmt.run([contract, testee], function(){
+                    console.log("Set score to unconfirmed for contract: " + contract);
+                });   
+            }
+            else if (rows.length > 1) { //should never happen hence let's exit
+                console.error(
+                    "The following task plus testee combination is saved multiple times " + 
+                    "(" + rows.length.toString() + " times) which is invalid in table Answers: " +
+                    contract + ", " + testee);
+                process.exit(1); //terminate server
+            }
+        }.bind(this));    
+    }
+
+    getUnconfirmedScores(){
+        return new Promise(function (resolve, reject) {
+            var stmt = this.db.all(
+                "SELECT * FROM Answers WHERE scoreConfirmed == 0;", function(err, rows){
+                if (err) {
+                    console.error(err);
+                    process.exit(1);
+                } else {
+                    resolve(rows);
+                }
+            });
+        }.bind(this)); 
+    }
+
+    updateScore(contract, testee, score) {
+        console.log("UPDATE SCORE");
         return new Promise(function (resolve, reject) {
             var stmt = this.db.prepare(
                 "SELECT * FROM Answers WHERE contract LIKE ? AND testee LIKE ?;");
@@ -229,13 +324,13 @@ class DB{
             else if (rows.length == 1) {
                 var stmt = this.db.prepare(
                     "UPDATE Answers " +
-                    "SET score = ? " +
+                    "SET score = ?, scoreConfirmed = 1 " + //also set confirmed to true!
                     "WHERE contract LIKE ? AND testee LIKE ?;");
                 stmt.run([score, contract, testee], function(){
                     console.log("Update score for Task: " + contract);
                 });                
             }
-            else { // should never happen hence let's exit
+            else { //should never happen hence let's exit
                 console.error(
                     "The following task plus testee combination is saved multiple times " + 
                     "(" + rows.length.toString() + " times) which is invalid in table Answers: " +

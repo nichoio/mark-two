@@ -40,8 +40,8 @@ app.solveTask = function(address, answer) {
 
     web3.eth.getAccounts(function(error, accounts) {
       task.methods.solve(answer).send(
-          {from: accounts[0], gasPrice: '1000', gas: 2000000}).on(
-        'receipt', function(receipt){
+          {from: accounts[0], gasPrice: '1000', gas: 2000000})
+      .on('transactionHash', function(hash){
           //wait for transaction feedback/receipt
           app.setAnswer(address, accounts[0]);
       });
@@ -64,16 +64,16 @@ app.postTask = function(transaction, owner) {
 };
 
 app.setAnswer = function(contract, testee) {
-  console.log("order DAPP backend to set answer.");
+  console.log("Announce backend that new answer was given.");
   var xhr = new XMLHttpRequest();
-  xhr.open("POST", '/update/answer', true);
+  xhr.open("POST", '/create/answer', true);
   xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 
-  // xhr.onreadystatechange = function() { //Call a function when the state changes.
-  //     if(this.readyState == XMLHttpRequest.DONE && this.status == 200) {
-  //       location.reload(); //refresh page
-  //     }
-  // };
+  xhr.onreadystatechange = function() {
+      if(this.readyState == XMLHttpRequest.DONE && this.status == 200) {
+        location.reload(); //refresh page in order to show "Processing" button
+      }
+  };
 
   xhr.send("contract=" + contract + "&testee=" + testee);
 };
@@ -81,7 +81,7 @@ app.setAnswer = function(contract, testee) {
 app.account = function() {
   return new Promise(function (resolve, reject) {
     if(typeof web3 == "undefined") {
-      resolve();  //return undefined
+      resolve(); //return undefined
     }
     web3.eth.getAccounts(function(error, accounts) {
       resolve(accounts[0]);
@@ -95,8 +95,8 @@ app.mark = function(address, testee, score){
 
     web3.eth.getAccounts(function(error, accounts) {
       task.methods.correct(testee, score).send(
-          {from: accounts[0], gasPrice: '1000', gas: 2000000}).on(
-        'receipt', function(receipt){
+          {from: accounts[0], gasPrice: '1000', gas: 2000000})
+      .on('transactionHash', function(hash){
           //wait for transaction feedback/receipt
           app.updateScore(address, testee);
       });
@@ -105,7 +105,7 @@ app.mark = function(address, testee, score){
 };
 
 app.updateScore = function(contract, testee) {
-  console.log("order DAPP backend to update score.");
+  console.log("Announce to backend that score was changed.");
   var xhr = new XMLHttpRequest();
   xhr.open("POST", '/update/score', true);
   xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");

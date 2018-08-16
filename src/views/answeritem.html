@@ -3,12 +3,18 @@
   <p class="mb-1">Answer: {{ a.answer }}</p>
   <p class="mb-1 scoreRow">
     Score:
-    {% if a.score%}
+    {% if (a.score) and (a.scoreConfirmed) == 1 %}
       <span class="btn scoreResult scoreResultSmall">
-          {{ a.score }} of {{ task.maxscore }}
+        {{ a.score }} of {{ task.maxscore }}
+      </span>
+    {% elif a.scoreConfirmed == 1 %}
+      <span>
+        ? of {{ task.maxscore }}
       </span>
     {% else %}
-      ? of {{ task.maxscore }}
+      <span class="scoreUnconfirmed">
+        ? of {{ task.maxscore }}
+      </span>
     {% endif %}
   </p>
 </div>

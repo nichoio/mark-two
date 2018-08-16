@@ -24,18 +24,33 @@
   app.account().then(function(acc){
     if ('{{task.corrector}}'.toLowerCase() == acc){
       $('#answerList').children().each(function() {
-        $(this).find(".scoreRow").append(
-          '<span class="float-right form-inline">' +
-          '<input class="form-control scoreInput"/>' +
-          '<button type="button" class="btn btn-primary mark">' +
-          'Mark' +
-          '</button>' +
-          '</span>'
-        );
 
-        //if this answer was already marked
-        if (!$(this).find(".scoreRow").text().includes('?')) {
-          $(this).find('button').text('Mark again');
+        //if this score is confirmed - offer "Mark" button
+        if ($(this).find('.scoreUnconfirmed').length == 0) {
+          console.log("NOT FOUND");
+          $(this).find('.scoreRow').append(
+            '<span class="float-right form-inline">' +
+            '<input class="form-control scoreInput"/>' +
+            '<button type="button" class="btn btn-primary mark">' +
+            'Mark' +
+            '</button>' +
+            '</span>'
+          );
+
+          //if this answer was already marked
+          if (!$(this).find(".scoreRow").text().includes('?')) {
+            $(this).find('button').text('Mark again');
+          }
+        }
+        else { //else signalize that score is being processed
+          console.log("UNCONFIRMED FOUND");
+          $(this).find('.scoreRow').append(
+            '<span class="float-right form-inline">' +
+            '<button type="button" class="btn btn-primary disabledButton">' +
+            'Processing' +
+            '</button>' +
+            '</span>'
+          );        
         }
       });
       $('#correctorInfo').text('Corrector: You');
