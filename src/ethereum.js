@@ -3,7 +3,22 @@ const Web3 = require('web3');
 const taskAbi = require('./eth/TaskABI.json');
 const providers = require('./../secrets/providers.json');
 
-var web3 = new Web3(new Web3.providers.HttpProvider(providers.ropsten));
+var web3 = new Web3(new Web3.providers.HttpProvider(providers.local));
+
+function getTaskByTransaction(hash) {
+    return new Promise(function (resolve, reject) {
+        web3.eth.getTransactionReceipt(hash)
+        .then(function(data){
+            if (data) {
+                //return destination of transaction, i.e. the task contract
+                resolve(data.contractAddress);
+            }
+            else{
+                reject(new TypeError('Receipt is null'));
+            }
+        });
+    });
+}
 
 function getTaskData(address) {
     var task = new web3.eth.Contract(taskAbi, address);
@@ -28,6 +43,7 @@ function getTaskScore(address, testee) {
 }
 
 module.exports = {
+    getTaskByTransaction: getTaskByTransaction,
     getTaskData: getTaskData,
     getTaskAnswer: getTaskAnswer,
     getTaskScore: getTaskScore,

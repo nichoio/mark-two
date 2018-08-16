@@ -1,11 +1,13 @@
 const path = require('path');
 
 const bodyParser = require('body-parser');
+const cron = require('cron');
 const express = require('express');
 const nunjucks = require('nunjucks');
 
 const eth = require('./ethereum');
 const dbModule = require('./db');
+const cronl = require('./cronlogic');
 
 const port = 3000 || process.env.PORT;
 const app = express();
@@ -43,19 +45,11 @@ app.get('/create', function(req, res){
 });
 
 app.post('/create', function(req, res){
-    eth.getTaskData(req.body.contract)
-    .then(function(values){
-        var json = {
-            "contract": req.body.contract,
-            "question": values[0],
-            "owner": values[1],
-            "corrector": values[2],
-            "keyword": values[3],
-            "maxScore": values[4]
-        };
-
-        db.addTask(json); //keep track of this contract in DB
-        res.redirect('/tasks/owner/' + values[1]); //show tasks of owner afterwards
+    //save transaction to get picked up by cron job later
+    db.addTransaction(req.body.transaction)
+    .then(function(){
+        //show tasks of owner afterwards (new contract might not be visible yet)
+        res.redirect('/tasks/owner/' + req.body.owner);
     });
 });
 
@@ -129,18 +123,24 @@ app.post('/update/answer', function(req, res){
 app.post('/update/score', function(req, res){
     eth.getTaskScore(req.body.contract, req.body.testee)
     .then(function(score){
-        db.addTaskScore(req.body.contract, req.body.testee, score)
+        db.updateTaskScore(req.body.contract, req.body.testee, score)
         .then(function(){
             res.sendStatus(200);
         });
     });
 });
 
-
-
 app.listen(port, () => {
     console.log("Express Listening at http://localhost:" + port);
 });
+
+new cron.CronJob('*/10 * * * * *', function() {
+    cronl.observeTaskInit(db, eth);
+  },
+  null,
+  true, //start job right now
+  null
+);
 
 function addressShort(address) {
     return address.substring(0, 8) + '...';
