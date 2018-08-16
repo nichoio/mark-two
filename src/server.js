@@ -113,7 +113,7 @@ app.get('/task/:address', function(req, res){
 app.post('/update/answer', function(req, res){
     eth.getTaskAnswer(req.body.contract, req.body.testee)
     .then(function(answer){
-        db.addTaskAnswer(req.body.contract, req.body.testee, answer)
+        db.addAnswer(req.body.contract, req.body.testee, answer)
         .then(function(){
             res.sendStatus(200);
         });

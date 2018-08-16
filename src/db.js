@@ -178,7 +178,7 @@ class DB{
         }.bind(this));        
     }    
 
-    addTaskAnswer(contract, testee, answer) {
+    addAnswer(contract, testee, answer) {
         return new Promise(function (resolve, reject) {
             var stmt = this.db.prepare(
                 "SELECT * FROM Answers WHERE contract LIKE ? AND testee LIKE ?;");
