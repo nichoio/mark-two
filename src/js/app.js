@@ -69,11 +69,11 @@ app.setAnswer = function(contract, testee) {
   xhr.open("POST", '/update/answer', true);
   xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 
-  xhr.onreadystatechange = function() { //Call a function when the state changes.
-      if(this.readyState == XMLHttpRequest.DONE && this.status == 200) {
-        location.reload(); //refresh page
-      }
-  };
+  // xhr.onreadystatechange = function() { //Call a function when the state changes.
+  //     if(this.readyState == XMLHttpRequest.DONE && this.status == 200) {
+  //       location.reload(); //refresh page
+  //     }
+  // };
 
   xhr.send("contract=" + contract + "&testee=" + testee);
 };
