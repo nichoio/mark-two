@@ -3,7 +3,7 @@ const Web3 = require('web3');
 const taskAbi = require('./eth/TaskABI.json');
 const providers = require('./../secrets/providers.json');
 
-var web3 = new Web3(new Web3.providers.HttpProvider(providers.local));
+var web3 = new Web3(new Web3.providers.HttpProvider(providers.ropsten));
 
 function getTaskByTransaction(hash) {
     return new Promise(function (resolve, reject) {
@@ -32,12 +32,12 @@ function getTaskData(address) {
     return Promise.all([p1, p2, p3, p4, p5]);
 }
 
-function getTaskAnswer(address, testee) {
+function getAnswer(address, testee) {
     var task = new web3.eth.Contract(taskAbi, address);
     return task.methods.answers(testee).call();
 }
 
-function getTaskScore(address, testee) {
+function getAnswerScore(address, testee) {
     var task = new web3.eth.Contract(taskAbi, address);
     return task.methods.scores(testee).call();
 }
@@ -45,6 +45,6 @@ function getTaskScore(address, testee) {
 module.exports = {
     getTaskByTransaction: getTaskByTransaction,
     getTaskData: getTaskData,
-    getTaskAnswer: getTaskAnswer,
-    getTaskScore: getTaskScore,
+    getAnswer: getAnswer,
+    getAnswerScore: getAnswerScore
 };

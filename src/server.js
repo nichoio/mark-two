@@ -45,7 +45,7 @@ app.get('/create', function(req, res){
 });
 
 app.post('/create', function(req, res){
-    //save transaction to get picked up by cron job later
+    //save transaction which will be picked up by cron job
     db.addTransaction(req.body.transaction)
     .then(function(){
         //show tasks of owner afterwards (new contract might not be visible yet)
@@ -110,23 +110,23 @@ app.get('/task/:address', function(req, res){
     });
 });
 
-app.post('/update/answer', function(req, res){
-    eth.getTaskAnswer(req.body.contract, req.body.testee)
-    .then(function(answer){
-        db.addAnswer(req.body.contract, req.body.testee, answer)
-        .then(function(){
-            res.sendStatus(200);
-        });
+app.post('/create/answer', function(req, res){
+    //tell DB to store answer placeholder which will be picked up by cron job
+    db.addBlankAnswer(req.body.contract, req.body.testee)
+    .then(function(){
+        res.sendStatus(200);
     });
 });
 
 app.post('/update/score', function(req, res){
-    eth.getTaskScore(req.body.contract, req.body.testee)
-    .then(function(score){
-        db.updateTaskScore(req.body.contract, req.body.testee, score)
-        .then(function(){
-            res.sendStatus(200);
-        });
+    // eth.getAnswerScore(req.body.contract, req.body.testee)
+    // .then(function(score){
+    //     db.updateScore(req.body.contract, req.body.testee, score)
+    //     .then(function(){
+    db.updateUnconfirmedScore(req.body.contract, req.body.testee)
+    .then(function(){
+        console.log("DONE WITH UNCONFIRMING");
+        res.sendStatus(200);
     });
 });
 
@@ -141,6 +141,23 @@ new cron.CronJob('*/10 * * * * *', function() {
   true, //start job right now
   null
 );
+
+new cron.CronJob('*/10 * * * * *', function() {
+    cronl.observeBlankAnswers(db, eth);
+  },
+  null,
+  true,
+  null
+);
+
+new cron.CronJob('*/10 * * * * *', function() {
+    cronl.observeUnconfirmedScores(db, eth);
+  },
+  null,
+  true,
+  null
+);
+
 
 function addressShort(address) {
     return address.substring(0, 8) + '...';
