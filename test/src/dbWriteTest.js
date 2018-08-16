@@ -45,12 +45,12 @@ describe('dbWrite', function(){
             //write to DB
             dbTest.serialize(function() {
                 dbTest.run(
-                    "CREATE TABLE Testees (contract TEXT NOT NULL, testee TEXT NOT NULL, " +
+                    "CREATE TABLE Answers (contract TEXT NOT NULL, testee TEXT NOT NULL, " +
                     "answer TEXT NOT NULL, score INTEGER);", function(){
-                    db.addTaskAnswer(
+                    db.addAnswer(
                             '0xe3c68818cD85D16106ac92fd7763a6B56eB0E60E',
                             '0xD819B3f5d3453c7cEaa9f25004ceb767dCcc0b40', 'myAnswer');
-                    db.addTaskAnswer(
+                    db.addAnswer(
                             '0xe3c68818cD85D16106ac92fd7763a6B56eB0E60E',
                             '0xC4Dfa83bb50681576a86078B4C772BD40eA586D8', 'myDifferentAnswer');
                 });
@@ -84,9 +84,9 @@ describe('dbWrite', function(){
         });
     });
 
-    it('addTaskAnswer', function(done) {
+    it('addAnswer', function(done) {
         dbTest.all(
-            "SELECT * FROM Testees;", function(err, rows) {
+            "SELECT * FROM Answers;", function(err, rows) {
             if (err) {
                 console.error(err);
                 process.exit(1);
