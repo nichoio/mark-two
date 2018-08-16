@@ -1,7 +1,10 @@
 {% extends "list.html" %}
 
 {% block headline %}Assignments owned by {{ ownerShort }}{% endblock %}
-{% block subheadline %}List of all assignments which have the given address as owner.{% endblock %}
+{% block subheadline %}
+  List of all assignments which have the given address as owner.
+  Note that newly created assignments will not show up immediately.
+{% endblock %}
 {% block tasks %}
   {% for t in tasks %}
     {% include "listitem.html" %}
