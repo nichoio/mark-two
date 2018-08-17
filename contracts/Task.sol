@@ -40,6 +40,7 @@ contract Task {
     function correct(address testee, uint score) public{
         require(
             corrector == msg.sender &&
+            score > 0 &&  //giving zero points not allowed since 0 is default val in mapping
             score <= maxScore &&
             bytes(answers[testee]).length > 0 //testee must have answered before
         );
