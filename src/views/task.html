@@ -12,7 +12,9 @@
 
   <div class="list-group" id="answerList">
     {% for a in answers %}
-      {% include "answeritem.html" %}
+      {% if a.answer|length %}
+        {% include "answeritem.html" %}
+      {% endif %}
     {% else %}
       This Assignment has not been solved by anyone yet.
     {% endfor %}
