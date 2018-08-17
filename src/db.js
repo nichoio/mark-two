@@ -259,7 +259,6 @@ class DB{
 
     //sets an score as unconfirmed, thus a transaction updating this score is currently under way
     updateUnconfirmedScore(contract, testee) {
-        console.log("UNCONFIRM SCORE");
         return new Promise(function (resolve, reject) {
             var stmt = this.db.prepare(
                 "SELECT * FROM Answers WHERE contract LIKE ? AND testee LIKE ?;");
@@ -306,7 +305,6 @@ class DB{
     }
 
     updateScore(contract, testee, score) {
-        console.log("UPDATE SCORE");
         return new Promise(function (resolve, reject) {
             var stmt = this.db.prepare(
                 "SELECT * FROM Answers WHERE contract LIKE ? AND testee LIKE ?;");
