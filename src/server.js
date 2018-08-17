@@ -119,13 +119,9 @@ app.post('/create/answer', function(req, res){
 });
 
 app.post('/update/score', function(req, res){
-    // eth.getAnswerScore(req.body.contract, req.body.testee)
-    // .then(function(score){
-    //     db.updateScore(req.body.contract, req.body.testee, score)
-    //     .then(function(){
+    //tell DB to unset confirmation of the current score
     db.updateUnconfirmedScore(req.body.contract, req.body.testee)
     .then(function(){
-        console.log("DONE WITH UNCONFIRMING");
         res.sendStatus(200);
     });
 });

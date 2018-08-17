@@ -68,19 +68,10 @@ function observeUnconfirmedScores(db, eth) {
         console.log("Count of unconfirmed scores: " + rows.length);
         if (!rows) {return;}
 
-        console.log("UNCONFIRMED SCORES LIST:");
-        console.log(rows);
-
         for (let i = 0; i < rows.length; i++) {
             eth.getAnswerScore(rows[i].contract, rows[i].testee)
             .then(function(score){
                 //TODO: detect if same score was given again (am besten im contract)
-                console.log("DER NEUE SCORE:");
-                console.log(score);
-                console.log("DER ALTE SCORE:");
-                console.log(rows[i].score);
-                console.log("TYPE OF SCORE:");
-                console.log(typeof score);
                 //TODO: remove == 0 dirty fix
                 if (score == rows[i].score || score == "0") { //if blockchain still returns old score (or null)
                     console.log(
