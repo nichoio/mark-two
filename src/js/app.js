@@ -3,12 +3,12 @@ var app = new Object();
 app.web3Provider = null;
 
 app.initWeb3 = function() {
-  // Is there an injected web3 instance?
+  //Is there an injected web3 instance?
   if (typeof web3 !== 'undefined') {
     app.web3Provider = web3.currentProvider;
     console.log("Use injected/Metamask provider.");
   } else {
-    // If no injected web3 instance is detected, fall back to Ganache
+    //If no injected web3 instance is detected, fall back to Ganache
     app.web3Provider = new Web3.providers.HttpProvider('http://localhost:7545');
     console.log("Use new provider.");
   }
@@ -22,11 +22,17 @@ app.newTask = function(question, corrector, keyword, maxScore) {
       var task = new web3.eth.Contract(json);
 
       web3.eth.getAccounts(function(error, accounts) {
-        task.deploy({
-          data: "0x" + bin, arguments: [corrector, question, keyword, maxScore]})
-        .send({from: accounts[0], gasPrice: '1000', gas: 2000000})
-        .on('transactionHash', function(hash){
-          app.postTask(hash, accounts[0]);
+        web3.eth.getGasPrice()
+        //looks like getGasPrice() returns price of mainnet regardless of actual provider
+        .then(function(gasPrice){
+          task.deploy({
+            data: "0x" + bin, arguments: [corrector, question, keyword, maxScore]})
+          //price multiplied by 1.5 to make sure that transaction goes through
+          //limit fixed since task contract always consume roughly 900k gas (regardless of chain)
+          .send({from: accounts[0], gasPrice: gasPrice*1.5, gas: 2000000})
+          .on('transactionHash', function(hash){
+            app.postTask(hash, accounts[0]);
+          });
         });
       });
     });
@@ -39,11 +45,14 @@ app.solveTask = function(address, answer) {
     var task = new web3.eth.Contract(json, address);
 
     web3.eth.getAccounts(function(error, accounts) {
-      task.methods.solve(answer).send(
-          {from: accounts[0], gasPrice: '1000', gas: 2000000})
-      .on('transactionHash', function(hash){
-          //wait for transaction feedback/receipt
-          app.setAnswer(address, accounts[0]);
+      web3.eth.getGasPrice()
+      .then(function(gasPrice){
+        task.methods.solve(answer).send(
+            {from: accounts[0], gasPrice: gasPrice*1.5, gas: 2000000})
+        .on('transactionHash', function(hash){
+            //wait for transaction feedback/receipt
+            app.setAnswer(address, accounts[0]);
+        });
       });
     });
   });
@@ -92,13 +101,15 @@ app.account = function() {
 app.mark = function(address, testee, score){
   $.getJSON("/eth/TaskABI.json", function(json) {
     var task = new web3.eth.Contract(json, address);
-
     web3.eth.getAccounts(function(error, accounts) {
-      task.methods.correct(testee, score).send(
-          {from: accounts[0], gasPrice: '1000', gas: 2000000})
-      .on('transactionHash', function(hash){
-          //wait for transaction feedback/receipt
-          app.updateScore(address, testee);
+      web3.eth.getGasPrice()
+      .then(function(gasPrice){
+        task.methods.correct(testee, score).send(
+            {from: accounts[0], gasPrice: gasPrice*1.5, gas: 2000000})
+        .on('transactionHash', function(hash){
+            //wait for transaction feedback
+            app.updateScore(address, testee);
+        });
       });
     });
   });  
@@ -112,7 +123,7 @@ app.updateScore = function(contract, testee) {
 
   xhr.onreadystatechange = function() { //Call a function when the state changes.
       if(this.readyState == XMLHttpRequest.DONE && this.status == 200) {
-         location.reload(); // refresh page
+         location.reload(); //refresh page
       }
   };
 
