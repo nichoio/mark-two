@@ -45,16 +45,6 @@ describe('dbWrite', function(){
             //write to DB
             dbTest.serialize(function() {
                 dbTest.run(
-                    "CREATE TABLE Answers (contract TEXT NOT NULL, testee TEXT NOT NULL, " +
-                    "answer TEXT NOT NULL, score INTEGER);", function(){
-                    db.addAnswer(
-                            '0xe3c68818cD85D16106ac92fd7763a6B56eB0E60E',
-                            '0xD819B3f5d3453c7cEaa9f25004ceb767dCcc0b40', 'myAnswer');
-                    db.addAnswer(
-                            '0xe3c68818cD85D16106ac92fd7763a6B56eB0E60E',
-                            '0xC4Dfa83bb50681576a86078B4C772BD40eA586D8', 'myDifferentAnswer');
-                });
-                dbTest.run(
                     "CREATE TABLE Tasks (contract TEXT NOT NULL, owner TEXT NOT NULL, "+
                     "question TEXT NOT NULL, corrector TEXT NOT NULL, " +
                     "keyword TEXT NOT NULL, maxscore INTEGER NOT NULL, " +
@@ -67,6 +57,7 @@ describe('dbWrite', function(){
                         });
                     });
                 });
+                //use dbTest.run() to insert more data
             });
         });
     });
@@ -74,19 +65,6 @@ describe('dbWrite', function(){
     it('addTask', function(done) {
         dbTest.all(
             "SELECT * FROM Tasks;", function(err, rows) {
-            if (err) {
-                console.error(err);
-                process.exit(1);
-            } else {
-                assert.equal(rows.length, 2, 'It\'s not 2"');
-                done();
-            }
-        });
-    });
-
-    it('addAnswer', function(done) {
-        dbTest.all(
-            "SELECT * FROM Answers;", function(err, rows) {
             if (err) {
                 console.error(err);
                 process.exit(1);
