@@ -5,15 +5,17 @@ const cron = require('cron');
 const express = require('express');
 const nunjucks = require('nunjucks');
 
-const eth = require('./ethereum');
+const ether = require('./ethereum');
 const dbModule = require('./db');
 const cronl = require('./cronlogic');
+const providers = require('./../secrets/providers.json');
 
 const port = 3000 || process.env.PORT;
 const app = express();
 const dbPath = './mark_two_db.sqlt';
 
 var db = new dbModule.DB(dbPath);
+var eth = new ether.Eth(providers.ropsten);
 
 nunjucks.configure(path.join(__dirname, 'views'), {
     express: app,

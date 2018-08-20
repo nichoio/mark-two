@@ -1,3 +1,7 @@
+/*  logic for cron jobs. These functions check if relevant transactions
+    on the blockchain are confirmed. After confirmation, db will be updated accordingly.
+    The cron jobs themselves are set up withon server.js */
+
 //check if transactions for creating contracts are confirmed
 function observeTaskInit(db, eth) {
     db.getUnconfirmedTransactions()
@@ -72,7 +76,6 @@ function observeUnconfirmedScores(db, eth) {
             eth.getAnswerScore(rows[i].contract, rows[i].testee)
             .then(function(score){
                 //TODO: detect if same score was given again (am besten im contract)
-                //TODO: remove == 0 dirty fix
                 if (score == rows[i].score || score == "0") { //if blockchain still returns old score (or null)
                     console.log(
                         'The score for the following contract + testee is not confirmed yet: ' +
