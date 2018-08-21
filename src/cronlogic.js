@@ -20,7 +20,9 @@ function observeTaskInit(db, eth) {
                         'owner': values[1],
                         'corrector': values[2],
                         'keyword': values[3],
-                        'maxScore': values[4]
+                        'maxScore': values[4],
+                        'token': values[5],
+                        'endDatetime': values[6]
                     };
 
                     return Promise.all([
@@ -94,8 +96,38 @@ function observeUnconfirmedScores(db, eth) {
     });
 }
 
+function observeRewards(db, eth) {
+    db.getUnconfirmedRewards()
+    .then(function(rows){
+        console.log("Count of unconfirmed rewards: " + rows.length);
+        if (!rows) {return;}
+
+        for (let i = 0; i < rows.length; i++) {
+            eth.getTaskTokenAmount(rows[i].contract)
+            .then(function(amount){
+                //if blockchain still returns old amount
+                console.log("THE REWARD AMOUNT:");
+                console.log(amount);
+                if (amount == rows[i].token_amount) {
+                    console.log(
+                        'The reward for the following contract confirmed yet: ' +
+                        rows[i].contract);
+                }
+                else {
+                    db.updateReward(rows[i].contract, amount);
+                }
+            })
+            .catch(function(error) {
+                console.log(error);
+            });
+        }
+    });
+}
+
+
 module.exports = {
     observeTaskInit: observeTaskInit,
     observeBlankAnswers: observeBlankAnswers,
-    observeUnconfirmedScores: observeUnconfirmedScores
+    observeUnconfirmedScores: observeUnconfirmedScores,
+    observeRewards: observeRewards
 };

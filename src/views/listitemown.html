@@ -1,0 +1,59 @@
+<a
+  href="/task/{{ t.contract }}"
+  class="list-group-item list-group-item-action flex-column"
+  id="{{ t.contract }}"
+>
+  <div class="d-flex w-100 justify-content-between">
+    <h5 class="mb-1">
+      {{ t.question }}&nbsp;&nbsp;
+      <span class="badge badge-info keywordSpan">{{ t.keyword }}</span>
+    </h5>
+    {{ t.created_utc }}
+  </div>
+  <p class="mb-1">Address: {{ t.contract }}</p>
+  <p class="mb-1">
+    Corrector:
+    {% if t.owner == t.corrector %}
+      This address
+    {% else %}
+      {{ t.corrector }}
+    {% endif %}
+  </p>
+  <p class="mb-1 taskReward">Reward:
+    {% if t.token_amount %}
+      {{ t.token_amount }} M2C
+    {% else %}
+      0 M2C (not incentiviced yet)
+    {% endif %}
+
+    {% if (t.state == "o") and (t.token_confirmed == 0) %}
+        <span class="float-right btn btn-primary disabledButton">
+          Processing
+        </span>
+    {% elif t.state == "op" %}
+      {% if t.token_confirmed == 0 %}
+        <span class="float-right btn btn-primary disabledButton">
+          Processing
+        </span>
+      {% else %}
+        <span class="float-right btn btn-primary disabledButton">
+          Already incentiviced
+        </span>
+      {% endif %}
+    {% elif t.state == "f" %}
+      {% if t.token_confirmed == 0 %}
+        <span class="float-right btn btn-primary disabledButton">
+          Processing
+        </span>
+      {% else %}
+        <span class="float-right btn btn-primary disabledButton">
+          Task expired
+        </span>
+      {% endif %}
+    {% elif t.state == "fp" %}
+      <span class="float-right btn btn-primary disabledButton">
+        Already payed out
+      </span>
+    {% endif %}
+  </p>
+</a>

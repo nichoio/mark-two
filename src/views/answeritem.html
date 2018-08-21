@@ -3,11 +3,11 @@
   <p class="mb-1">Answer: {{ a.answer }}</p>
   <p class="mb-1 scoreRow">
     Score:
-    {% if (a.score) and (a.scoreConfirmed) == 1 %}
+    {% if (a.score) and (a.score_confirmed) == 1 %}
       <span class="btn scoreResult scoreResultSmall">
         {{ a.score }} of {{ task.maxscore }}
       </span>
-    {% elif a.scoreConfirmed == 1 %}
+    {% elif a.score_confirmed == 1 %}
       <span>
         ? of {{ task.maxscore }}
       </span>
