@@ -1,7 +1,9 @@
 pragma solidity ^0.4.23;
 
+import "./EIP20.sol";
+
 contract Task {
-    // Version without any tokenized payments
+    EIP20 public token;
 
     address public owner;
     address public corrector;
@@ -9,15 +11,24 @@ contract Task {
     string public question;
     string public keyword;
     uint public maxScore;
+    uint public missingScores;
+    uint public endTimestamp;
 
     mapping(address => string) public answers;
     mapping(address => uint) public scores;
     
-    constructor(address _corrector, string _question, string _keyword, uint _maxScore) public{
+    constructor(
+        address _corrector,
+        string _question,
+        string _keyword,
+        uint _maxScore,
+        uint _endTimestamp,
+        address _token) public{
         require(
             bytes(_question).length > 0 &&
             bytes(_keyword).length > 0 &&
-            _maxScore > 0
+            _maxScore > 0 &&
+            block.timestamp < _endTimestamp
         );
 
         owner = msg.sender;
@@ -25,25 +36,37 @@ contract Task {
         question = _question;
         maxScore = _maxScore;
         keyword = _toLower(_keyword);
+        endTimestamp = _endTimestamp;
+        token = EIP20(_token);
+    }
+
+    modifier onlyCorrector {
+        require(msg.sender == corrector);
+        _;
     }
 
     function solve(string answer) public{
         require(
+            block.timestamp < endTimestamp && //cannot solve after time is up
             bytes(answer).length > 0 &&
             bytes(answers[msg.sender]).length == 0
             //it's not allowed to solve a task twice
         );
 
         answers[msg.sender] = answer;
+        missingScores++; //one new uncorrected answer
     }
 
-    function correct(address testee, uint score) public{
+    function correct(address testee, uint score) onlyCorrector public {
         require(
-            corrector == msg.sender &&
             score > 0 &&  //giving zero points not allowed since 0 is default val in mapping
             score <= maxScore &&
             bytes(answers[testee]).length > 0 //testee must have answered before
         );
+
+        if (scores[testee] == 0) { //if no score was given before
+            missingScores--; //one less uncorrected answer
+        }
 
         // overriding of existing scores is allowed
         scores[testee] = score;
@@ -63,5 +86,14 @@ contract Task {
             }
         }
         return string(bLower);
+    }
+
+    function withdrawTokens() onlyCorrector public {
+        require(
+            block.timestamp >= endTimestamp &&
+            missingScores == 0
+        );
+
+        token.transfer(corrector, token.balanceOf(this));
     }
 }

@@ -87,6 +87,8 @@ class DB{
         var cor = json.corrector;
         var key = json.keyword;
         var max = json.maxScore;
+        var tok = json.token;
+        var end = json.endDatetime;
 
         return new Promise(function (resolve, reject) {
             //check if Tasks table already has an entry under this contract address
@@ -95,20 +97,21 @@ class DB{
                 if (rows.length == 0){ //save this contract for the first time
                     var stmt = this.db.prepare(
                         "INSERT INTO Tasks " +
-                        "(contract, question, owner, corrector, keyword, maxscore)" +
-                        "VALUES (?, ?, ?, ?, ?, ?);");
-                    stmt.run([con, que, own, cor, key, max], function(){
+                        "(contract, question, owner, corrector, " +
+                        "keyword, maxscore, token_address, end_utc)" +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?);");
+                    stmt.run([con, que, own, cor, key, max, tok, end], function(){
                         console.log("Save new address to Tasks: " + con);
                         resolve();
                     });
                 }
-                else if (rows.length == 1) resolve();  // don't save since it's already there
-                else { // should never happen hence let's exit
+                else if (rows.length == 1) resolve();  //don't save since it's already there
+                else { //should never happen hence let's exit
                     console.error(
                         "The following Task address is saved multiple times " + 
                         "(" + rows.length.toString() + " times) in table Tasks: " +
                         con);
-                    process.exit(1); // terminate server
+                    process.exit(1); //terminate server
                 }
             }.bind(this));
         }.bind(this));
@@ -205,7 +208,7 @@ class DB{
                     "The following task plus testee combination is saved multiple times " + 
                     "(" + rows.length.toString() + " times) which is invalid in table Answers: " +
                     contract + ", " + testee);
-                process.exit(1); // terminate server
+                process.exit(1); //terminate server
             }
         }.bind(this));    
     }
@@ -274,7 +277,7 @@ class DB{
             if (rows.length == 1){ //set flag for unconfirmed score
                 var stmt = this.db.prepare(
                     "UPDATE Answers " +
-                    "SET scoreConfirmed = 0 " +
+                    "SET score_confirmed = 0 " +
                     "WHERE contract LIKE ? AND testee LIKE ?;");
                 stmt.run([contract, testee], function(){
                     console.log("Set score to unconfirmed for contract: " + contract);
@@ -293,7 +296,7 @@ class DB{
     getUnconfirmedScores(){
         return new Promise(function (resolve, reject) {
             var stmt = this.db.all(
-                "SELECT * FROM Answers WHERE scoreConfirmed == 0;", function(err, rows){
+                "SELECT * FROM Answers WHERE score_confirmed == 0;", function(err, rows){
                 if (err) {
                     console.error(err);
                     process.exit(1);
@@ -317,12 +320,11 @@ class DB{
             });
         }.bind(this))
         .then(function(rows){
-            //check if Answers table already has an answer saved for this task and this testee
-            if (rows.length == 0) return; //don't save since there was no answer given.
+            if (rows.length == 0) return;
             else if (rows.length == 1) {
                 var stmt = this.db.prepare(
                     "UPDATE Answers " +
-                    "SET score = ?, scoreConfirmed = 1 " + //also set confirmed to true!
+                    "SET score = ?, score_confirmed = 1 " + //also set confirmed to true!
                     "WHERE contract LIKE ? AND testee LIKE ?;");
                 stmt.run([score, contract, testee], function(){
                     console.log("Update score for Task: " + contract);
@@ -333,7 +335,7 @@ class DB{
                     "The following task plus testee combination is saved multiple times " + 
                     "(" + rows.length.toString() + " times) which is invalid in table Answers: " +
                     contract + ", " + testee);
-                process.exit(1); // terminate server
+                process.exit(1); //terminate server
             }
         }.bind(this));    
     }
@@ -349,6 +351,81 @@ class DB{
                     resolve(rows);
                 }
             });
+        }.bind(this));    
+    }
+
+    setUnconfirmedReward(contract) {
+        return new Promise(function (resolve, reject) {
+            var stmt = this.db.prepare("SELECT * FROM Tasks WHERE contract LIKE ?");
+            stmt.all([contract], function(err, rows){
+                if (rows.length == 1){ //save this contract for the first time
+                    var stmt = this.db.prepare(
+                        "UPDATE Tasks " +
+                        "SET token_confirmed = 0 " +
+                        "WHERE contract LIKE ?;");
+                    stmt.run([contract], function(){
+                        console.log("Set reward to unconfirmed for contract: " + contract);
+                        resolve();
+                    });
+                }
+                else if (rows.length == 0) return;  //don't save since it's already there
+                else { //should never happen hence let's exit
+                    console.error(
+                        "The following Task address is saved multiple times " + 
+                        "(" + rows.length.toString() + " times) in table Tasks: " +
+                        contract);
+                    process.exit(1); //terminate server
+                }
+            }.bind(this));
+        }.bind(this));   
+    }
+
+    getUnconfirmedRewards(){
+        console.log("LOOK UP UNCONFIRMED REWARDS");
+        return new Promise(function (resolve, reject) {
+            var stmt = this.db.all(
+                "SELECT * FROM Tasks WHERE token_confirmed == 0;", function(err, rows){
+                if (err) {
+                    console.error(err);
+                    process.exit(1);
+                } else {
+                    resolve(rows);
+                }
+            });
+        }.bind(this)); 
+    }
+
+    updateReward(contract, amount) {
+        return new Promise(function (resolve, reject) {
+            var stmt = this.db.prepare(
+                "SELECT * FROM Tasks WHERE contract LIKE ?;");
+            stmt.all([contract], function(err, rows){
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(rows);
+                }
+            });
+        }.bind(this))
+        .then(function(rows){
+            if (rows.length == 0) return;
+            else if (rows.length == 1) {
+                var stmt = this.db.prepare(
+                    "UPDATE Tasks " +
+                    "SET token_amount = ?, " +
+                    "token_confirmed = 1, state = \"op\" " + //also change state!
+                    "WHERE contract LIKE ?;");
+                stmt.run([amount, contract], function(){
+                    console.log("Update reward for Task: " + contract);
+                });                
+            }
+            else { //should never happen hence let's exit
+                    console.error(
+                        "The following Task address is saved multiple times " + 
+                        "(" + rows.length.toString() + " times) in table Tasks: " +
+                        contract);
+                process.exit(1); //terminate server
+            }
         }.bind(this));    
     }
 }
