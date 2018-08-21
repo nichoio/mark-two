@@ -15,7 +15,7 @@ const app = express();
 const dbPath = './mark_two_db.sqlt';
 
 var db = new dbModule.DB(dbPath);
-var eth = new ether.Eth(providers.ropsten);
+var eth = new ether.Eth(providers.local);
 
 nunjucks.configure(path.join(__dirname, 'views'), {
     express: app,
@@ -60,7 +60,10 @@ app.get('/tasks/owner/:owner', function(req, res){
     .then(function(values){
         values = utcsShorts(values);
         var ownerShort = addressShort(req.params.owner);
-        res.render('tasksowner.html', {tasks: values, ownerShort: ownerShort});
+        res.render(
+            'tasksowner.html',
+            {tasks: values, owner: req.params.owner, ownerShort: ownerShort
+        });
     });
 });
 
@@ -128,6 +131,15 @@ app.post('/update/score', function(req, res){
     });
 });
 
+app.post('/update/reward', function(req, res){
+    //tell DB to unset confirmation of reward for this contract
+    db.setUnconfirmedReward(req.body.contract)
+    .then(function(){
+        console.log("REWARD UNCONFIREMD");
+        res.sendStatus(200);
+    });
+});
+
 app.listen(port, () => {
     console.log("Express Listening at http://localhost:" + port);
 });
@@ -156,6 +168,13 @@ new cron.CronJob('*/10 * * * * *', function() {
   null
 );
 
+new cron.CronJob('*/10 * * * * *', function() {
+    cronl.observeRewards(db, eth);
+  },
+  null,
+  true,
+  null
+);
 
 function addressShort(address) {
     return address.substring(0, 8) + '...';
