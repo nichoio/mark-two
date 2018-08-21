@@ -7,8 +7,52 @@
 {% endblock %}
 {% block tasks %}
   {% for t in tasks %}
-    {% include "listitem.html" %}
+    {% include "listitemown.html" %}
   {% else %}
     No tasks found owned by {{ ownerShort }} .
   {% endfor %}
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    $(window).on('load', function() {
+      app.account()
+      .then(function(acc){
+        if (acc == '{{owner}}') {
+          $('.taskReward').each(function() {
+            //only append if there's no span for "pending" or already given reward yet
+            if($(this).find('span').length == 0) {
+              $(this).append(
+              	'<span class="float-right form-inline">' +
+              	'<input class="form-control amountInput"/>' +
+                '<a href="">' +
+                '<button type="button" class="btn btn-primary pay">' +
+                'Incentivize' +
+                '</button>' +
+                '</a>' +
+                '</span>'
+              );
+            }
+          });
+        }
+      })
+      .then(function(acc){
+        $('.pay').on('click', function(event) {
+          event.preventDefault();
+
+          //get the right contract address string from list...
+          var contract = $(this).closest('.list-group-item').attr('id');
+          var amount = parseInt($(this).parent().siblings('.amountInput').val());
+
+          app.payTask(contract, amount);
+
+        });
+      })
+      .then(function(){
+        $('.amountInput').on('click', function(event) {
+          event.preventDefault();
+      	});
+      });
+    });
+  </script>
 {% endblock %}
