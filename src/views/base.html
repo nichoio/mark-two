@@ -61,13 +61,21 @@
         app.account()
         .then(function(acc){
           if(acc) {
-            $('#userInfo').text('Logged in as: ' + acc);
+            app.getBalance(acc) //also display M2C balance for logged in users
+            .then(function(balance){
+              $('#userInfo').text('Logged in as: ' + acc);
+              $('#userInfo').after(
+                '<span id="userBalance" class="navbar-text">' +
+                'Balance: ' + balance + ' M2C' +
+                '</span>'
+              );
+            });
             return acc;
           }
           else{
             $('#userInfo')
             .text(
-              "You're not logged in with any Ethereum account!")
+              'You\'re not logged in with any Ethereum account!')
             .addClass("font-italic");
             return null;
           }

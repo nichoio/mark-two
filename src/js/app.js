@@ -1,6 +1,11 @@
 var app = new Object();
 
 app.web3Provider = null;
+//for developing, the token address is hard coded
+app.m2cAddress = "0xbb8f8A408e562a4FA5A058E73D9B6d3EAC0e0E33";
+app.taskBinPath = "/eth/Task.bin";
+app.taskABIPath = "/eth/TaskABI.json";
+app.tokenABIPath = "/eth/EIP20ABI.json";
 
 app.initWeb3 = function() {
   //Is there an injected web3 instance?
@@ -17,8 +22,8 @@ app.initWeb3 = function() {
 
 //Deploy new task with current user as sender
 app.newTask = function(question, corrector, keyword, maxScore) {
-  $.getJSON("/eth/TaskABI.json", function(json) {
-    $.get("/eth/Task.bin", function(bin) {
+  $.getJSON(app.taskABIPath, function(json) {
+    $.get(app.taskBinPath, function(bin) {
       var task = new web3.eth.Contract(json);
 
       web3.eth.getAccounts(function(error, accounts) {
@@ -31,8 +36,8 @@ app.newTask = function(question, corrector, keyword, maxScore) {
             question,
             keyword,
             maxScore,
-            1534889936, //UNIX timestamp
-            "0xbb8f8A408e562a4FA5A058E73D9B6d3EAC0e0E33" //token address
+            1534949495, //UNIX timestamp
+            app.m2cAddress
           ]})
           //price multiplied by 1.5 to make sure that transaction goes through
           //limit fixed since task contract always consume roughly 900k gas (regardless of chain)
@@ -48,7 +53,7 @@ app.newTask = function(question, corrector, keyword, maxScore) {
 
 //Solve an existing task with current user as sender
 app.solveTask = function(address, answer) {
-  $.getJSON("/eth/TaskABI.json", function(json) {
+  $.getJSON(app.taskABIPath, function(json) {
     var task = new web3.eth.Contract(json, address);
 
     web3.eth.getAccounts(function(error, accounts) {
@@ -106,7 +111,7 @@ app.account = function() {
 };
 
 app.mark = function(address, testee, score){
-  $.getJSON("/eth/TaskABI.json", function(json) {
+  $.getJSON(app.taskABIPath, function(json) {
     var task = new web3.eth.Contract(json, address);
     web3.eth.getAccounts(function(error, accounts) {
       web3.eth.getGasPrice()
@@ -139,11 +144,11 @@ app.updateScore = function(contract, testee) {
 
 // Transfer reward to task as current user
 app.payTask = function(contract, tokenAmount) {
-  $.getJSON("/eth/TaskABI.json", function(taskAbi) {
+  $.getJSON(app.taskABIPath, function(taskAbi) {
     var task = new web3.eth.Contract(taskAbi, contract);
     task.methods.token().call() //TODO: get this data from db
     .then(function(tokenAddress){
-      $.getJSON("/eth/EIP20ABI.json", function(eip20Abi) {
+      $.getJSON(app.tokenABIPath, function(eip20Abi) {
         var token = new web3.eth.Contract(eip20Abi, tokenAddress);
         web3.eth.getAccounts(function(error, accounts) {
           web3.eth.getGasPrice()
@@ -173,6 +178,18 @@ app.postReward = function(contract) {  //TODO: maybe reuse this on pay out?!
   };
 
   xhr.send("contract=" + contract);
+};
+
+app.getBalance = function(address) {
+  return new Promise(function (resolve, reject) {
+    $.getJSON(app.tokenABIPath, function(eip20Abi) {
+      var token = new web3.eth.Contract(eip20Abi, app.m2cAddress);
+      token.methods.balanceOf(address).call()
+      .then(function(balance){
+        resolve(balance);
+      });
+    });
+  });
 };
 
 $(window).on('load', function() {
