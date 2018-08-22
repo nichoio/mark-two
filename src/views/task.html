@@ -3,11 +3,24 @@
 {% block headline %}{{ task.question }}{% endblock %}
 {% block subheadline %}<span class="badge badge-info keywordSpan">{{ task.keyword }}</span>{% endblock %}
 {% block content %}
-  <div class="row border" id="taskInfo">
-        <div class="col-lg-3 border-right">Address: {{conShort}}</div>
-        <div class="col-lg-3 border-right">Owner: {{ownShort}}</div>
-        <div class="col-lg-3 border-right" id="correctorInfo">Corrector: {{corShort}}</div>
-        <div class="col-lg-3">Created at: {{task.created_utc}}</div>
+  <div class="border" id="taskInfo">
+    <div class="row border-bottom taskInfoRow">
+          <div class="col-lg-4 border-right">Address: {{conShort}}</div>
+          <div class="col-lg-4 border-right">Owner: {{ownShort}}</div>
+          <div class="col-lg-4" id="correctorInfo">Corrector: {{corShort}}</div>
+    </div>
+    <div class="row taskInfoRow">
+          <div class="col-lg-4 border-right">Created at: {{task.created_utc}}</div>
+          <div class="col-lg-4 border-right">Expires (UTC): {{task.end_utc}}</div>
+          <div class="col-lg-4">
+            Reward:
+            {% if task.token_amount %}
+              {{task.token_amount}} M2C
+            {% else %}
+              0 M2C
+            {% endif %}
+          </div>
+    </div>
   </div>
 
   <div class="list-group" id="answerList">
@@ -29,7 +42,6 @@
 
         //if this score is confirmed - offer "Mark" button
         if ($(this).find('.scoreUnconfirmed').length == 0) {
-          console.log("NOT FOUND");
           $(this).find('.scoreRow').append(
             '<span class="float-right form-inline">' +
             '<input class="form-control scoreInput"/>' +
@@ -45,7 +57,6 @@
           }
         }
         else { //else signalize that score is being processed
-          console.log("UNCONFIRMED FOUND");
           $(this).find('.scoreRow').append(
             '<span class="float-right form-inline">' +
             '<button type="button" class="btn btn-primary disabledButton">' +
