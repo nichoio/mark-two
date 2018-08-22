@@ -12,6 +12,10 @@
   </div>
   <p class="mb-1">Address: {{ t.con }}</p>
   <p class="mb-1">Corrector: {{ t.corrector }}</p>
+  <p class="mb-1">
+    Expires (UTC):
+    {{ t.end_utc }}
+  </p>
   <p class="mb-1 keywordAnswer">Answer:
     {% if t.score or (t.score == 0) %}
       {{ t.answer }}

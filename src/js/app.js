@@ -21,7 +21,7 @@ app.initWeb3 = function() {
 };
 
 //Deploy new task with current user as sender
-app.newTask = function(question, corrector, keyword, maxScore) {
+app.newTask = function(question, corrector, keyword, maxScore, endTimestamp) {
   $.getJSON(app.taskABIPath, function(json) {
     $.get(app.taskBinPath, function(bin) {
       var task = new web3.eth.Contract(json);
@@ -36,7 +36,7 @@ app.newTask = function(question, corrector, keyword, maxScore) {
             question,
             keyword,
             maxScore,
-            1534949495, //UNIX timestamp
+            endTimestamp,
             app.m2cAddress
           ]})
           //price multiplied by 1.5 to make sure that transaction goes through
@@ -154,7 +154,7 @@ app.payTask = function(contract, tokenAmount) {
           web3.eth.getGasPrice()
           .then(function(gasPrice){
             token.methods.transfer(contract, tokenAmount).send(
-                {from: accounts[0], gasPrice: gasPrice*1.5, gas: 2000000})
+                {from: accounts[0], gasPrice: gasPrice*1.5, gas: 500000})
             .on('transactionHash', function(hash){
                 app.postReward(contract);
             });

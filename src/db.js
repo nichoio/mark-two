@@ -210,7 +210,7 @@ class DB{
                     contract + ", " + testee);
                 process.exit(1); //terminate server
             }
-        }.bind(this));    
+        }.bind(this));
     }
 
     addBlankAnswer(contract, testee) {
@@ -243,7 +243,7 @@ class DB{
                     contract + ", " + testee);
                 process.exit(1); //terminate server
             }
-        }.bind(this));    
+        }.bind(this));
     }
 
     getBlankAnswers(){
@@ -257,7 +257,7 @@ class DB{
                     resolve(rows);
                 }
             });
-        }.bind(this)); 
+        }.bind(this));
     }
 
     //sets an score as unconfirmed, thus a transaction updating this score is currently under way
@@ -281,7 +281,7 @@ class DB{
                     "WHERE contract LIKE ? AND testee LIKE ?;");
                 stmt.run([contract, testee], function(){
                     console.log("Set score to unconfirmed for contract: " + contract);
-                });   
+                });
             }
             else if (rows.length > 1) { //should never happen hence let's exit
                 console.error(
@@ -290,7 +290,7 @@ class DB{
                     contract + ", " + testee);
                 process.exit(1); //terminate server
             }
-        }.bind(this));    
+        }.bind(this));
     }
 
     getUnconfirmedScores(){
@@ -304,7 +304,7 @@ class DB{
                     resolve(rows);
                 }
             });
-        }.bind(this)); 
+        }.bind(this));
     }
 
     updateScore(contract, testee, score) {
@@ -337,7 +337,7 @@ class DB{
                     contract + ", " + testee);
                 process.exit(1); //terminate server
             }
-        }.bind(this));    
+        }.bind(this));
     }
 
     getAnswersByTask(address) {
@@ -351,7 +351,7 @@ class DB{
                     resolve(rows);
                 }
             });
-        }.bind(this));    
+        }.bind(this));
     }
 
     setUnconfirmedReward(contract) {
@@ -377,11 +377,10 @@ class DB{
                     process.exit(1); //terminate server
                 }
             }.bind(this));
-        }.bind(this));   
+        }.bind(this));
     }
 
     getUnconfirmedRewards(){
-        console.log("LOOK UP UNCONFIRMED REWARDS");
         return new Promise(function (resolve, reject) {
             var stmt = this.db.all(
                 "SELECT * FROM Tasks WHERE token_confirmed == 0;", function(err, rows){
@@ -392,7 +391,7 @@ class DB{
                     resolve(rows);
                 }
             });
-        }.bind(this)); 
+        }.bind(this));
     }
 
     updateReward(contract, amount) {
@@ -426,7 +425,19 @@ class DB{
                         contract);
                 process.exit(1); //terminate server
             }
-        }.bind(this));    
+        }.bind(this));
+    }
+
+    finishExpiredTasks(){
+        return new Promise(function (resolve, reject) {
+            this.db.run(
+                "UPDATE Tasks " +
+                "SET state = \"f\", " +
+                "WHERE strftime(\"%s\",\"now\") > strftime(\"%s\", end_utc);", function(){
+                console.log("Update expired tasks.");
+                resolve();
+            });
+        }.bind(this));
     }
 }
 

@@ -18,6 +18,16 @@
       <label>Keyword (case insensitive)</label>
       <input type="text" class="form-control" id="keyword" placeholder="Enter keyword for this task.">
     </div>
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <label>End date (UTC)</label>
+        <input type="text" class="form-control" id="endDate" placeholder="Enter year, month and day (yyyy-mm-dd)">
+      </div>
+      <div class="form-group col-md-6">
+        <label>End time (UTC)</label>
+        <input type="text" class="form-control" id="endTime" placeholder="Enter hour, minute and second (hh:mm:ss)">
+      </div>
+    </div>
     <div class="form-group">
       <label>Maximum score</label>
       <input type="text" class="form-control" id="maxScore" placeholder="Enter highest possible score">
@@ -36,8 +46,12 @@
         var corrector = $('#createForm').find('input[id="corrector"]').val();
         var keyword = $('#createForm').find('input[id="keyword"]').val();
         var maxScore = $('#createForm').find('input[id="maxScore"]').val();
+        var endDate = $('#createForm').find('input[id="endDate"]').val();
+        var endTime = $('#createForm').find('input[id="endTime"]').val();
+        var endTimestamp = new Date(endDate + 'T' + endTime + 'Z').valueOf() / 1000;
         maxScore = Number(maxScore);
-        app.newTask(questionText, corrector, keyword, maxScore);
+
+        app.newTask(questionText, corrector, keyword, maxScore, endTimestamp);
     });
   </script>
 {% endblock %}
