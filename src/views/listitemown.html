@@ -5,7 +5,7 @@
 >
   <div class="d-flex w-100 justify-content-between">
     <h5 class="mb-1">
-      {{ t.question }}&nbsp;&nbsp;
+      {{ t.question }}&nbsp;
       <span class="badge badge-info keywordSpan">{{ t.keyword }}</span>
     </h5>
     {{ t.created_utc }}
@@ -19,11 +19,19 @@
       {{ t.corrector }}
     {% endif %}
   </p>
+  <p class="mb-1">
+    Expires (UTC):
+    {{ t.end_utc }}
+  </p>
   <p class="mb-1 taskReward">Reward:
     {% if t.token_amount %}
       {{ t.token_amount }} M2C
     {% else %}
-      0 M2C (not incentiviced yet)
+      {% if (t.state == "f") or (t.state == "fp") %}
+        0 M2C
+      {% else %}
+        0 M2C (not incentiviced yet)
+      {% endif %}
     {% endif %}
 
     {% if (t.state == "o") and (t.token_confirmed == 0) %}

@@ -106,8 +106,6 @@ function observeRewards(db, eth) {
             eth.getTaskTokenAmount(rows[i].contract)
             .then(function(amount){
                 //if blockchain still returns old amount
-                console.log("THE REWARD AMOUNT:");
-                console.log(amount);
                 if (amount == rows[i].token_amount) {
                     console.log(
                         'The reward for the following contract confirmed yet: ' +
@@ -124,10 +122,14 @@ function observeRewards(db, eth) {
     });
 }
 
+function observeEndTime(db, eth) {
+    db.finishExpiredTasks();
+}
 
 module.exports = {
     observeTaskInit: observeTaskInit,
     observeBlankAnswers: observeBlankAnswers,
     observeUnconfirmedScores: observeUnconfirmedScores,
-    observeRewards: observeRewards
+    observeRewards: observeRewards,
+    observeEndTime: observeEndTime
 };

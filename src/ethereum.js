@@ -38,7 +38,7 @@ class Eth{
         //convert UNIX timestampt to datetime (UTC always)
         var p7 = task.methods.endTimestamp().call()
         .then(function(value){
-            return moment(value*1000).format('YYYY-MM-DD kk:mm:ss');
+            return moment.utc(value*1000).format('YYYY-MM-DD kk:mm:ss');
         });
 
         return Promise.all([p1, p2, p3, p4, p5, p6, p7]);
@@ -50,7 +50,6 @@ class Eth{
             task.methods.token().call()
             .then(function(tokenAddress){
                 var token = new this.web3.eth.Contract(eip20Abi, tokenAddress);
-                console.log("CALL BALANCE");
                 resolve(token.methods.balanceOf(address).call());
             }.bind(this));
         }.bind(this));

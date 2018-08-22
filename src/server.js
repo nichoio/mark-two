@@ -135,7 +135,6 @@ app.post('/update/reward', function(req, res){
     //tell DB to unset confirmation of reward for this contract
     db.setUnconfirmedReward(req.body.contract)
     .then(function(){
-        console.log("REWARD UNCONFIREMD");
         res.sendStatus(200);
     });
 });
@@ -170,6 +169,14 @@ new cron.CronJob('*/10 * * * * *', function() {
 
 new cron.CronJob('*/10 * * * * *', function() {
     cronl.observeRewards(db, eth);
+  },
+  null,
+  true,
+  null
+);
+
+new cron.CronJob('0 */1 * * * *', function() {  //look up expired tasks only once per minute
+    cronl.observeEndTime(db, eth);
   },
   null,
   true,
