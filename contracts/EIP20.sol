@@ -19,7 +19,7 @@ contract EIP20 is EIP20Interface {
     Some wallets/interfaces might not even bother to look at this information.
     */
     string public name = "Mark-2-Token";
-    uint8 public decimals = 2;
+    uint8 public decimals = 0;
     string public symbol = "M2C";
     uint256 initialAmount = 1000000;
 
