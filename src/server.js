@@ -98,6 +98,16 @@ app.get('/task/:address', function(req, res){
             var ownShort = addressShort(values[0].owner);
             var corShort = addressShort(values[0].corrector);
             values[0].created_utc = values[0].created_utc.split(" ")[0];
+            var marksMissing = true; //default true bc we assume that there are no answers
+
+            for (let i = 0; i < values[1].length; i++) {
+                marksMissing = false; //there's at least 1 answer...
+                if (!values[1][i].score) {
+                    marksMissing = true; //...but it has no score. Set true and break
+                    break;
+                }
+            }
+
             res.render(
                 'task.html',
                 {
@@ -105,7 +115,8 @@ app.get('/task/:address', function(req, res){
                     conShort: conShort,
                     ownShort: ownShort,
                     corShort: corShort,
-                    answers: values[1]
+                    answers: values[1],
+                    marksMissing: marksMissing
                 }
             );
         }
@@ -133,6 +144,7 @@ app.post('/update/score', function(req, res){
 
 app.post('/update/reward', function(req, res){
     //tell DB to unset confirmation of reward for this contract
+    //could be either increase or decrease of funds
     db.setUnconfirmedReward(req.body.contract)
     .then(function(){
         res.sendStatus(200);
@@ -169,6 +181,14 @@ new cron.CronJob('*/10 * * * * *', function() {
 
 new cron.CronJob('*/10 * * * * *', function() {
     cronl.observeRewards(db, eth);
+  },
+  null,
+  true,
+  null
+);
+
+new cron.CronJob('*/10 * * * * *', function() {
+    cronl.observePayouts(db, eth);
   },
   null,
   true,

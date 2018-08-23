@@ -11,7 +11,13 @@
     </div>
     <div class="row taskInfoRow">
           <div class="col-lg-4 border-right">Created at: {{task.created_utc}}</div>
-          <div class="col-lg-4 border-right">Expires (UTC): {{task.end_utc}}</div>
+          <div class="col-lg-4 border-right">
+            Expires (UTC):
+            {{task.end_utc}}
+            {% if (task.state == "f") or (task.state == "fp") %}
+              <strong>(Expired)</strong>
+            {% endif %}
+          </div>
           <div class="col-lg-4">
             Reward:
             {% if task.token_amount %}
@@ -29,7 +35,12 @@
         {% include "answeritem.html" %}
       {% endif %}
     {% else %}
-      This Assignment has not been solved by anyone yet.
+      {% if task.state == "f" %}
+        This Assignment was never solved by anyone.
+        If any reward was offered, the owner can recover his tokens now.
+      {% else %}
+        This Assignment has not been solved by anyone yet.
+      {% endif %}
     {% endfor %}
   </div>
 {% endblock %}
@@ -67,10 +78,46 @@
         }
       });
       $('#correctorInfo').text('Corrector: You');
+
+      if('{{ task.token_amount }}') {
+        $('#pageSubHeadline').append( //add reward button for corrector only
+          '<span class="float-right">' +
+          '<button type="button" class="btn btn-primary" id="rewardButton">' +
+          'Get Reward!' +
+          '</button>' +
+          '</span>'
+        );
+
+        if (
+          ('{{ task.state }}' != 'f') ||
+          ('{{ marksMissing }}' == 'true') ||
+          ('{{token_confirmed}}' == '0'))
+          {
+          $('#rewardButton').addClass('disabledButton');
+
+          if ('{{ task.state }}' == 'o') {
+            $("#rewardButton").attr('title', 'This task has no reward to earn');
+          }
+          else if ('{{ task.state }}' == 'op') {
+            $("#rewardButton").attr('title', 'This task is not expired yet');
+          }
+          else if ('{{ task.state }}' == 'f') {
+            $("#rewardButton").attr('title', 'You have to mark all answers first');
+          }
+          else if ('{{ task.state }}' == 'fp') {
+            $("#rewardButton").attr('title', 'You have already received your reward');
+          }
+        }
+      }
     }
   })
   .then(function(){
-    $(".mark").on( "click", function() {
+    $('#rewardButton').not(".disabledButton").on('click', function() {
+      app.getReward('{{ task.contract }}');
+    });
+  })
+  .then(function(){
+    $('.mark').on('click', function() {
       var contract = '{{task.contract}}';
       var testee = $(this).closest('.list-group-item').find('.answerTestee').text().split(' ')[1];
       var score = parseInt($(this).siblings('.scoreInput').val());

@@ -165,7 +165,7 @@ app.payTask = function(contract, tokenAmount) {
   });
 };
 
-app.postReward = function(contract) {  //TODO: maybe reuse this on pay out?!
+app.postReward = function(contract) {
   console.log("Announce to backend that an incentive was added.");
   var xhr = new XMLHttpRequest();
   xhr.open("POST", '/update/reward', true);
@@ -190,6 +190,38 @@ app.getBalance = function(address) {
       });
     });
   });
+};
+
+app.getReward = function(contract) {
+  $.getJSON(app.taskABIPath, function(taskAbi) {
+    var task = new web3.eth.Contract(taskAbi, contract);
+    web3.eth.getAccounts(function(error, accounts) {
+      web3.eth.getGasPrice()
+      .then(function(gasPrice){
+        console.log("PREPARE TRANSACTION");
+        task.methods.withdrawTokens().send(
+            {from: accounts[0], gasPrice: gasPrice*1.5, gas: 500000})
+        .on('transactionHash', function(hash){
+            app.postPayout(contract);
+        });
+      });
+    });
+  });
+};
+
+app.postPayout = function(contract) {
+  console.log("Announce to backend that an incentive was payed out.");
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", '/update/reward', true);
+  xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+  xhr.onreadystatechange = function() { //Call a function when the state changes.
+      if(this.readyState == XMLHttpRequest.DONE && this.status == 200) {
+         location.reload(); //refresh page
+      }
+  };
+
+  xhr.send("contract=" + contract);
 };
 
 $(window).on('load', function() {

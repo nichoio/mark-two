@@ -48,8 +48,8 @@
     </nav>
 
     <div class="container">
-      <h1>{% block headline %}{% endblock %}</h1>
-      <h6>{% block subheadline %}{% endblock %}</h6>
+      <h1 id="pageHeadline">{% block headline %}{% endblock %}</h1>
+      <h6 id="pageSubHeadline">{% block subheadline %}{% endblock %}</h6>
       {% block content %}{% endblock %}
     </div>
     <script src="/js/jquery-3.3.1.min.js"></script>
@@ -101,7 +101,7 @@
 
             //global listeners for keyword badges
             //if someone is not logged in, keyword links will not work for this user!
-            $('.keywordSpan').on('click', function(e) {
+            $('.keywordSpan').on('click', function(event) {
               event.preventDefault();
               var keyword = $(this).text();
               window.open('/tasks/keyword/' + keyword + '?testee=' + acc, '_self');
