@@ -18,7 +18,7 @@ contract EIP20 is EIP20Interface {
     They allow one to customise the token contract & in no way influences the core functionality.
     Some wallets/interfaces might not even bother to look at this information.
     */
-    string public name = "Mark-2-Token";
+    string public name = "Mark2Coin";
     uint8 public decimals = 0;
     string public symbol = "M2C";
     uint256 initialAmount = 1000000;
