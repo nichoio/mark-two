@@ -16,7 +16,7 @@ sqlite3 mark_two_db.sqlt "CREATE TABLE Tasks (
 	created_utc TEXT DEFAULT CURRENT_TIMESTAMP,
 	end_utc TEXT NOT NULL,
 	token_address TEXT NOT NULL,
-	token_amount INTEGER,
+	token_amount INTEGER DEFAULT 0,
 	token_confirmed INTEGER DEFAULT 1,
 	state TEXT DEFAULT \"o\");"
 	# state is enum with 4 possible values:
