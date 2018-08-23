@@ -91,7 +91,7 @@
         if (
           ('{{ task.state }}' != 'f') ||
           ('{{ marksMissing }}' == 'true') ||
-          ('{{token_confirmed}}' == '0'))
+          ('{{ task.token_confirmed }}' == '0'))
           {
           $('#rewardButton').addClass('disabledButton');
 
