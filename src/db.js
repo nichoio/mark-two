@@ -354,6 +354,8 @@ class DB{
         }.bind(this));
     }
 
+    //signalize that some change happened to the reward
+    //could be either increase or decrease of funds
     setUnconfirmedReward(contract) {
         return new Promise(function (resolve, reject) {
             var stmt = this.db.prepare("SELECT * FROM Tasks WHERE contract LIKE ?");
@@ -383,7 +385,23 @@ class DB{
     getUnconfirmedRewards(){
         return new Promise(function (resolve, reject) {
             var stmt = this.db.all(
-                "SELECT * FROM Tasks WHERE token_confirmed == 0;", function(err, rows){
+                "SELECT * FROM Tasks WHERE token_confirmed == 0 " +
+                "AND state LIKE \"o\";", function(err, rows){
+                if (err) {
+                    console.error(err);
+                    process.exit(1);
+                } else {
+                    resolve(rows);
+                }
+            });
+        }.bind(this));
+    }
+
+    getUnconfirmedPayouts(){
+        return new Promise(function (resolve, reject) {
+            var stmt = this.db.all(
+                "SELECT * FROM Tasks WHERE token_confirmed == 0 " +
+                "AND state LIKE \"f\";", function(err, rows){
                 if (err) {
                     console.error(err);
                     process.exit(1);
@@ -428,13 +446,47 @@ class DB{
         }.bind(this));
     }
 
+    updateRewardPayout(contract) {
+        return new Promise(function (resolve, reject) {
+            var stmt = this.db.prepare(
+                "SELECT * FROM Tasks WHERE contract LIKE ?;");
+            stmt.all([contract], function(err, rows){
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(rows);
+                }
+            });
+        }.bind(this))
+        .then(function(rows){
+            if (rows.length == 0) return;
+            else if (rows.length == 1) {
+                var stmt = this.db.prepare(
+                    "UPDATE Tasks " +
+                    "SET token_confirmed = 1, state = \"fp\" " + //also change state!
+                    "WHERE contract LIKE ?;");
+                stmt.run([contract], function(){
+                    console.log("Update reward payout for Task: " + contract);
+                });                
+            }
+            else { //should never happen hence let's exit
+                    console.error(
+                        "The following Task address is saved multiple times " + 
+                        "(" + rows.length.toString() + " times) in table Tasks: " +
+                        contract);
+                process.exit(1); //terminate server
+            }
+        }.bind(this));
+    }
+
     finishExpiredTasks(){
         return new Promise(function (resolve, reject) {
             this.db.run(
                 "UPDATE Tasks " +
-                "SET state = \"f\", " +
-                "WHERE strftime(\"%s\",\"now\") > strftime(\"%s\", end_utc);", function(){
-                console.log("Update expired tasks.");
+                "SET state = \"f\"" +
+                "WHERE strftime(\"%s\",\"now\") > strftime(\"%s\", end_utc) " +
+                "AND state LIKE\"o%\";", function(){
+                console.log("Updating expired tasks.");
                 resolve();
             });
         }.bind(this));

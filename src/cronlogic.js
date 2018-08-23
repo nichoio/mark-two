@@ -108,7 +108,7 @@ function observeRewards(db, eth) {
                 //if blockchain still returns old amount
                 if (amount == rows[i].token_amount) {
                     console.log(
-                        'The reward for the following contract confirmed yet: ' +
+                        'The reward for the following contract is not confirmed yet: ' +
                         rows[i].contract);
                 }
                 else {
@@ -122,6 +122,34 @@ function observeRewards(db, eth) {
     });
 }
 
+function observePayouts(db, eth) {
+    db.getUnconfirmedPayouts()
+    .then(function(rows){
+        console.log("Count of unconfirmed payouts: " + rows.length);
+        if (!rows) {return;}
+
+        for (let i = 0; i < rows.length; i++) {
+            eth.getTaskTokenAmount(rows[i].contract)
+            .then(function(amount){
+                //if blockchain still returns old amount
+                if (amount == rows[i].token_amount) {
+                    console.log(
+                        'The reward for the following contract is not confirmed yet: ' +
+                        rows[i].contract);
+                }
+                else {
+                    db.updateRewardPayout(rows[i].contract);
+                }
+            })
+            .catch(function(error) {
+                console.log(error);
+            });
+        }
+    });
+}
+
+
+
 function observeEndTime(db, eth) {
     db.finishExpiredTasks();
 }
@@ -130,6 +158,7 @@ module.exports = {
     observeTaskInit: observeTaskInit,
     observeBlankAnswers: observeBlankAnswers,
     observeUnconfirmedScores: observeUnconfirmedScores,
+    observePayouts: observePayouts,
     observeRewards: observeRewards,
     observeEndTime: observeEndTime
 };

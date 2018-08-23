@@ -11,8 +11,10 @@ contract Task {
     string public question;
     string public keyword;
     uint public maxScore;
-    uint public missingScores;
     uint public endTimestamp;
+
+    uint missingScores = 0;
+    bool hasAnswers = false;
 
     mapping(address => string) public answers;
     mapping(address => uint) public scores;
@@ -45,6 +47,14 @@ contract Task {
         _;
     }
 
+    modifier ownerOrCorrector {
+        require(
+            msg.sender == corrector ||
+            msg.sender == owner
+        );
+        _;
+    }
+
     function solve(string answer) public{
         require(
             block.timestamp < endTimestamp && //cannot solve after time is up
@@ -53,6 +63,7 @@ contract Task {
             //it's not allowed to solve a task twice
         );
 
+        hasAnswers = true; //only relevant for the 1st this is called
         answers[msg.sender] = answer;
         missingScores++; //one new uncorrected answer
     }
@@ -88,12 +99,22 @@ contract Task {
         return string(bLower);
     }
 
-    function withdrawTokens() onlyCorrector public {
+    function withdrawTokens() ownerOrCorrector public {
         require(
             block.timestamp >= endTimestamp &&
-            missingScores == 0
+            missingScores == 0 &&
+            (
+                (msg.sender == corrector && hasAnswers == true) ||
+                (msg.sender == owner && hasAnswers == false)
+            )
         );
 
-        token.transfer(corrector, token.balanceOf(this));
+        if (msg.sender == corrector) {  // corrector receives his reward
+            token.transfer(corrector, token.balanceOf(this));
+        }
+        else{ //if nobody solved the task, owner can get back his tokens
+            token.transfer(owner, token.balanceOf(this));
+        }
+        //fallback for owner necessary bc otherwise funds could get locked forever
     }
 }
