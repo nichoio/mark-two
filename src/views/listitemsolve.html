@@ -16,6 +16,17 @@
     Expires (UTC):
     {{ t.end_utc }}
   </p>
+  <p class="mb-1 taskReward">Reward:
+    {% if t.token_amount %}
+      {{ t.token_amount }} M2C
+    {% else %}
+      {% if (t.state == "f") or (t.state == "fp") %}
+        0 M2C
+      {% else %}
+        0 M2C (not incentiviced yet)
+      {% endif %}
+    {% endif %}
+  </p>
   <p class="mb-1 keywordAnswer">Answer:
     {% if t.score or (t.score == 0) %}
       {{ t.answer }}
@@ -31,6 +42,10 @@
       -
       <span class="float-right btn btn-primary disabledButton">
         Processing answer
+      </span>
+    {% elif (t.state == "f") or (t.state == "fp") %}
+      <span class="float-right btn btn-primary disabledButton">
+        Task expired
       </span>
     {% else %}
       -
