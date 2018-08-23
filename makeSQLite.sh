@@ -22,8 +22,8 @@ sqlite3 mark_two_db.sqlt "CREATE TABLE Tasks (
 	# state is enum with 4 possible values:
 	# - o  = online
 	# - op = online and incentiviced (payed)
-	# - f  = finished (now > endTimestamp)
-	# - fp = finished and payed out (bounty payed out to corrector)
+	# - f  = finished (now > end_utc)
+	# - fp = finished and payed out (reward payed out to corrector)
 sqlite3 mark_two_db.sqlt "CREATE TABLE TasksTransactions (
 	hash TEXT NOT NULL,
 	confirmed INTEGER DEFAULT 0);"
