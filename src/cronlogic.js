@@ -105,8 +105,14 @@ function observeRewards(db, eth) {
         for (let i = 0; i < rows.length; i++) {
             eth.getTaskTokenAmount(rows[i].contract)
             .then(function(amount){
+                console.log("COMPARE REWARDS FOR:");
+                console.log(rows[i].contract);
+                console.log("DB AMOUNT:");
+                console.log(rows[i].token_amount);
+                console.log("BC AMOUNT:");
+                console.log(Number(amount));
                 //if blockchain still returns old amount
-                if (amount == rows[i].token_amount) {
+                if (Number(amount) == rows[i].token_amount) {
                     console.log(
                         'The reward for the following contract is not confirmed yet: ' +
                         rows[i].contract);
