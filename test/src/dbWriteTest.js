@@ -32,7 +32,9 @@ describe('dbWrite', function(){
                 "owner": "0x7E271C47FFd7A52caCa98B4D0483448693c0b023",
                 "corrector": "0xE807b266912cd9f117a42748A158328d677Ed789",
                 "keyword": "testkeyword",
-                "maxScore": "10"};
+                "maxScore": 10,
+                "endDatetime": "2018-09-13 00:00:00",
+                "token": "0xbb8f8A408e562a4FA5A058E73D9B6d3EAC0e0E33"};
 
             task2 = {
                 "contract": "0xc8CdEE3335EB037aAb43042177C3D6AA34FF64aF",
@@ -40,15 +42,26 @@ describe('dbWrite', function(){
                 "owner": "0x7E271C47FFd7A52caCa98B4D0483448693c0b023",
                 "corrector": "0xBEfDb4885A572BA3d3482E016A76311c0a58a026",
                 "keyword": "testkeyword",
-                "maxScore": "10"};
+                "maxScore": 10,
+                "endDatetime": "2018-09-13 00:00:00",
+                "token": "0xbb8f8A408e562a4FA5A058E73D9B6d3EAC0e0E33"};
 
             //write to DB
             dbTest.serialize(function() {
                 dbTest.run(
-                    "CREATE TABLE Tasks (contract TEXT NOT NULL, owner TEXT NOT NULL, "+
-                    "question TEXT NOT NULL, corrector TEXT NOT NULL, " +
-                    "keyword TEXT NOT NULL, maxscore INTEGER NOT NULL, " +
-                    "created_utc TEXT DEFAULT CURRENT_TIMESTAMP);", function(){
+                    'CREATE TABLE Tasks ( ' +
+                    'contract TEXT NOT NULL, ' +
+                    'owner TEXT NOT NULL, ' +
+                    'question TEXT NOT NULL, ' +
+                    'corrector TEXT NOT NULL, ' +
+                    'keyword TEXT NOT NULL, ' +
+                    'maxscore INTEGER NOT NULL, ' +
+                    'created_utc TEXT DEFAULT CURRENT_TIMESTAMP, ' +
+                    'end_utc TEXT NOT NULL, ' +
+                    'token_address TEXT NOT NULL, ' +
+                    'token_amount INTEGER DEFAULT 0, ' +
+                    'token_confirmed INTEGER DEFAULT 1, ' +
+                    'state TEXT DEFAULT "o");', function(){
                     db.addTask(task1)
                     .then(function () {
                         db.addTask(task2)

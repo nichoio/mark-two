@@ -1,11 +1,22 @@
-var Task = artifacts.require("Task");
+const moment = require('moment');
+
+var Token = artifacts.require('EIP20');
+var Task = artifacts.require('Task');
+
+//pick arbitraty moment in future
+var now1hlater = (moment.utc().valueOf() / 1000) + 3600;
 
 module.exports = function(deployer) {
-    deployer.deploy(
-        Task,
-        "0x12345d9cbe3a42899919fbd098d18f79bcf9a071",
-        "What is 2+2?",
-        "testkey",
-        "42"
-    );
+    deployer.deploy(Token)
+    .then(function() {
+	    return deployer.deploy(
+	        Task,
+	        '0x12345d9cbe3a42899919fbd098d18f79bcf9a071',
+	        'What is 2+2?',
+	        'testkey',
+	        '42',
+	        now1hlater,
+	        Token.address
+	    );
+    });
 };
