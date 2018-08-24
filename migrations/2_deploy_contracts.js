@@ -1,13 +1,13 @@
 const moment = require('moment');
 
-var Token = artifacts.require('EIP20');
+var EIP20 = artifacts.require('EIP20');
 var Task = artifacts.require('Task');
 
 //pick arbitraty moment in future
 var now1hlater = (moment.utc().valueOf() / 1000) + 3600;
 
 module.exports = function(deployer) {
-    deployer.deploy(Token)
+    deployer.deploy(EIP20)
     .then(function() {
 	    return deployer.deploy(
 	        Task,
@@ -16,7 +16,7 @@ module.exports = function(deployer) {
 	        'testkey',
 	        '42',
 	        now1hlater,
-	        Token.address
+	        EIP20.address
 	    );
     });
 };
