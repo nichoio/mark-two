@@ -1,10 +1,9 @@
 var app = new Object();
 
 app.web3Provider = null;
+
 //for developing, the token address is hard coded
-// app.m2cAddress = '0xbb8f8A408e562a4FA5A058E73D9B6d3EAC0e0E33'; //local
-app.m2cAddress = '0x954000046e68ab705878e41c58c466ae7793645c'; //ropsten
-// app.m2cAddress = '0xB4B9A943fdA6CA397e8CCB35cBfEd0552671fBB3'; //mainnet
+app.m2cAddress = 'INSERT ADDRESS FOR TOKEN HERE';
 
 app.taskBinPath = '/eth/Task.bin';
 app.taskABIPath = '/eth/TaskABI.json';
