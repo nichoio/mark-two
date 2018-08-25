@@ -1,8 +1,9 @@
 # mark-two
 
-...bringing assignments, exams and marks to the Blockchain.  
+...bringing assignments, exams and marks to the Blockchain. :rocket:
+
 This is a **DApp for Ethereum** allowing you to create so-called assignments, mainly consisting of a question and the possibility to solve such assignments. Moreover external correctors can grade these solutions. Creators of assignments can also incentivise their tasks.  
-After a corrector has graded all solutions (s)he can receive a reward in the form of **M2C-Tokens** (Mark2Coin-Tokens)!
+After a corrector has graded all solutions (s)he can receive a reward in the form of **M2C-Tokens** (Mark2Coin-Tokens)! :moneybag:
 
 ## How to set it up
 1. Set providers for web3.
@@ -16,6 +17,7 @@ After a corrector has graded all solutions (s)he can receive a reward in the for
  }
  ```
 
+ There's a good chance that you don't want to run a node locally to connect to. Instead you can request a free API key on [Infura](https://infura.io/) for example.
  Then you can utilize the connection in `src/server.js`. The current set up has preconfigured a connection to ropsten:
  `var eth = new ether.Eth(providers.ropsten);`  
 2. Install dependencies: `npm install`  
