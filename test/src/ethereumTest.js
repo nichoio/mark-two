@@ -5,9 +5,12 @@ const providers = require('./../../secrets/providers.json');
 
 var eth = new ether.Eth(providers.local);
 
-/*  the following tests use the truffle test engine.
-    But instead of just testing the contract,
-    the logic built around the contracts is being tested here */
+/**
+ * Tests for ethereum interface.
+ * Tests use the truffle test engine.
+ * But instead of just testing the contract
+ * the logic built around the contracts is being tested here
+ */
 contract('Task', function() {
     let task;
 

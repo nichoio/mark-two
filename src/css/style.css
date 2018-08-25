@@ -63,6 +63,13 @@ h6 {
 	cursor: pointer;
 }
 
+.taskInfoRow {
+	padding-top: 5px;
+	padding-bottom: 5px;
+	margin-left: 0px;
+	margin-right: 0px;
+}
+
 .scoreResult {
 	color: #ffffff;
 }
@@ -99,13 +106,6 @@ h6 {
 #taskInfo {
 	border-radius: .25rem;
 	margin-bottom: 30px;
-}
-
-.taskInfoRow {
-	padding-top: 5px;
-	padding-bottom: 5px;
-	margin-left: 0px;
-	margin-right: 0px;
 }
 
 #keywordInput {

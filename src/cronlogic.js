@@ -1,8 +1,11 @@
 /*  logic for cron jobs. These functions check if relevant transactions
     on the blockchain are confirmed. After confirmation, db will be updated accordingly.
-    The cron jobs themselves are set up withon server.js */
+    The cron jobs themselves are set up within server.js */
 
-//check if transactions for creating contracts are confirmed
+/*
+ * Checks if transactions for creating contracts are confirmed.
+ * This function fetches data from the Ethereum network (no Ether needed).
+ */
 function observeTaskInit(db, eth) {
     db.getUnconfirmedTransactions()
     .then(function(rows){
@@ -42,6 +45,10 @@ function observeTaskInit(db, eth) {
     });
 }
 
+/*
+ * Checks if transactions for answering tasks are confirmed.
+ * This function fetches data from the Ethereum network (no Ether needed).
+ */
 function observeBlankAnswers(db, eth) {
     db.getBlankAnswers()
     .then(function(rows){
@@ -53,7 +60,7 @@ function observeBlankAnswers(db, eth) {
             .then(function(answer){
                 if (answer) {
                     //replace placeholder with proper answer string
-                    db.addAnswer(rows[i].contract, rows[i].testee, answer);
+                    db.updateAnswer(rows[i].contract, rows[i].testee, answer);
                 }
                 else{
                     console.log(
@@ -68,6 +75,10 @@ function observeBlankAnswers(db, eth) {
     });
 }
 
+/*
+ * Checks if transactions for marking answers are confirmed.
+ * This function fetches data from the Ethereum network (no Ether needed).
+ */
 function observeUnconfirmedScores(db, eth) {
     db.getUnconfirmedScores()
     .then(function(rows){
@@ -96,6 +107,10 @@ function observeUnconfirmedScores(db, eth) {
     });
 }
 
+/*
+ * Checks if transactions for adding incentives to tasks are confirmed.
+ * This function fetches data from the Ethereum network (no Ether needed).
+ */
 function observeRewards(db, eth) {
     db.getUnconfirmedRewards()
     .then(function(rows){
@@ -128,6 +143,10 @@ function observeRewards(db, eth) {
     });
 }
 
+/*
+ * Checks if transactions for receiving rewards are confirmed.
+ * This function fetches data from the Ethereum network (no Ether needed).
+ */
 function observePayouts(db, eth) {
     db.getUnconfirmedPayouts()
     .then(function(rows){
@@ -154,8 +173,7 @@ function observePayouts(db, eth) {
     });
 }
 
-
-
+/** Checks if any tasks have expired (e.g. Datetime of now > Datetime given for a task). */
 function observeEndTime(db, eth) {
     db.finishExpiredTasks();
 }

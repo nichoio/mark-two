@@ -48,10 +48,10 @@
 {% block scripts %}
 <script>
   app.account().then(function(acc){
-    if ('{{task.corrector}}'.toLowerCase() == acc){
+    if ('{{task.corrector}}'.toLowerCase() == acc){ //special handling for corrector
       $('#answerList').children().each(function() {
 
-        //if this score is confirmed - offer "Mark" button
+        //if no score given yet or last given score is confirmed - offer "Mark" button
         if ($(this).find('.scoreUnconfirmed').length == 0) {
           $(this).find('.scoreRow').append(
             '<span class="float-right form-inline">' +
@@ -67,7 +67,7 @@
             $(this).find('button').text('Mark again');
           }
         }
-        else { //else signalize that score is being processed
+        else { //else signalise that score is being processed
           $(this).find('.scoreRow').append(
             '<span class="float-right form-inline">' +
             '<button type="button" class="btn btn-primary disabledButton">' +
@@ -88,6 +88,7 @@
           '</span>'
         );
 
+        //if reward is not available, give feedback why
         if (
           ('{{ task.state }}' != 'f') ||
           ('{{ marksMissing }}' == 'true') ||
@@ -126,7 +127,7 @@
     });
   });
 
-  $('.scoreResult').each(function() {
+  $('.scoreResult').each(function() { //coloring score badges depending on result
     var score = parseInt($(this).text().trim().split(' ')[0]);
     var maxScore = parseInt($(this).text().trim().split(' ')[2]);
     percentage = score/maxScore;

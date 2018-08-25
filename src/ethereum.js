@@ -5,11 +5,19 @@ const taskAbi = require('./eth/TaskABI.json');
 const eip20Abi = require('./eth/EIP20ABI.json');
 const providers = require('./../secrets/providers.json');
 
+/**
+ * Represents a web2 session to a Ethereum network.
+ * @constructor
+ */
 class Eth{
     constructor(provider) {
         this.web3 = new Web3(new Web3.providers.HttpProvider(provider));
     }
 
+    /*
+     * Get address of a task by the transaction generating that address.
+     * This function fetches data from the Ethereum network (no Ether needed).
+     */
     getTaskByTransaction(hash) {
         return new Promise(function (resolve, reject) {
             this.web3.eth.getTransactionReceipt(hash)
@@ -25,6 +33,10 @@ class Eth{
         }.bind(this));
     }
 
+    /*
+     * Get data about a certain task by it's address.
+     * This function fetches data from the Ethereum network (no Ether needed).
+     */
     getTaskData(address) {
         var task = new this.web3.eth.Contract(taskAbi, address);
 
@@ -44,6 +56,10 @@ class Eth{
         return Promise.all([p1, p2, p3, p4, p5, p6, p7]);
     }
 
+    /*
+     * Get amount of token belonging to a certain task.
+     * This function fetches data from the Ethereum network (no Ether needed).
+     */
     getTaskTokenAmount(address) {
         return new Promise(function (resolve, reject) {
             var task = new this.web3.eth.Contract(taskAbi, address);
@@ -55,11 +71,19 @@ class Eth{
         }.bind(this));
     }
 
+    /*
+     * Get an answer' string by task and testee.
+     * This function fetches data from the Ethereum network (no Ether needed).
+     */
     getAnswer(address, testee) {
         var task = new this.web3.eth.Contract(taskAbi, address);
         return task.methods.answers(testee).call();
     }
 
+    /*
+     * Get an answer' score by task and testee.
+     * This function fetches data from the Ethereum network (no Ether needed).
+     */
     getAnswerScore(address, testee) {
         var task = new this.web3.eth.Contract(taskAbi, address);
         return task.methods.scores(testee).call();

@@ -15,20 +15,23 @@ const app = express();
 const dbPath = './mark_two_db.sqlt';
 
 var db = new dbModule.DB(dbPath);
-var eth = new ether.Eth(providers.local);
+var eth = new ether.Eth(providers.ropsten);
 
+//add nunjucks templating to application
 nunjucks.configure(path.join(__dirname, 'views'), {
     express: app,
     watch: false,
     noCache: true
 });
 
-// parse application/x-www-form-urlencoded
+//parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
 
-// parse application/json
+//parse application/json
 app.use(bodyParser.json());
 
+
+//make paths to static files available to requests
 app.use('/img', express.static(path.join(__dirname, 'img')));
 app.use('/css', express.static(path.join(__dirname, 'css')));
 app.use('/js', express.static(path.join(__dirname, 'js')));
@@ -46,12 +49,41 @@ app.get('/create', function(req, res){
     res.render('create.html');
 });
 
+/** post to this route to add new task on backend */
 app.post('/create', function(req, res){
     //save transaction which will be picked up by cron job
     db.addTransaction(req.body.transaction)
     .then(function(){
         //show tasks of owner afterwards (new contract might not be visible yet)
         res.redirect('/tasks/owner/' + req.body.owner);
+    });
+});
+
+/** post to this route to add new answer on backend */
+app.post('/create/answer', function(req, res){
+    //tell DB to store answer placeholder which will be picked up by cron job
+    db.addBlankAnswer(req.body.contract, req.body.testee)
+    .then(function(){
+        res.sendStatus(200);
+    });
+});
+
+/** post to this route to add new score on backend */
+app.post('/update/score', function(req, res){
+    //tell DB to unset confirmation of the current score
+    db.updateUnconfirmedScore(req.body.contract, req.body.testee)
+    .then(function(){
+        res.sendStatus(200);
+    });
+});
+
+/** post to this route to signalise that funds for a reward were increased or decreased */
+app.post('/update/reward', function(req, res){
+    //tell DB to unset confirmation of reward for this contract
+    //could be either increase or decrease of funds
+    db.setUnconfirmedReward(req.body.contract)
+    .then(function(){
+        res.sendStatus(200);
     });
 });
 
@@ -126,34 +158,12 @@ app.get('/task/:address', function(req, res){
     });
 });
 
-app.post('/create/answer', function(req, res){
-    //tell DB to store answer placeholder which will be picked up by cron job
-    db.addBlankAnswer(req.body.contract, req.body.testee)
-    .then(function(){
-        res.sendStatus(200);
-    });
-});
-
-app.post('/update/score', function(req, res){
-    //tell DB to unset confirmation of the current score
-    db.updateUnconfirmedScore(req.body.contract, req.body.testee)
-    .then(function(){
-        res.sendStatus(200);
-    });
-});
-
-app.post('/update/reward', function(req, res){
-    //tell DB to unset confirmation of reward for this contract
-    //could be either increase or decrease of funds
-    db.setUnconfirmedReward(req.body.contract)
-    .then(function(){
-        res.sendStatus(200);
-    });
-});
-
+//set port to listen to
 app.listen(port, () => {
     console.log("Express Listening at http://localhost:" + port);
 });
+
+//set up cron jobs
 
 new cron.CronJob('*/10 * * * * *', function() {
     cronl.observeTaskInit(db, eth);
@@ -203,10 +213,12 @@ new cron.CronJob('0 */1 * * * *', function() {  //look up expired tasks only onc
   null
 );
 
+/** helper to generated shortened address */
 function addressShort(address) {
     return address.substring(0, 8) + '...';
 }
 
+/** helper to generate a date from datetime string */
 function utcsShorts(values) {
     for (let i = 0; i < values.length; i++) {
         // YYYY-MM-DD HH:MM:SS -> YYYY-MM-DD

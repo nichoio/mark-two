@@ -8,9 +8,11 @@ const dbModule = require('./../../src/db');
 
 var db = new dbModule.DB(dbTestPath);
 
+/** Tests for functions writing to db */
 describe('dbWrite', function(){
     var dbTest;
 
+    /** spin up new dummy DB with dummy data */
     before(function() {
         return new Promise(function (resolve) {
             //create new DB
@@ -75,6 +77,7 @@ describe('dbWrite', function(){
         });
     });
 
+    /** test if task was added properly correctly */
     it('addTask', function(done) {
         dbTest.all(
             "SELECT * FROM Tasks;", function(err, rows) {
@@ -88,6 +91,7 @@ describe('dbWrite', function(){
         });
     });
 
+    /** tear down test db */
     after(function() {
         dbTest.close();
 

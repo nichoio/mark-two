@@ -2,25 +2,32 @@ var app = new Object();
 
 app.web3Provider = null;
 //for developing, the token address is hard coded
-app.m2cAddress = "0xbb8f8A408e562a4FA5A058E73D9B6d3EAC0e0E33";
-app.taskBinPath = "/eth/Task.bin";
-app.taskABIPath = "/eth/TaskABI.json";
-app.tokenABIPath = "/eth/EIP20ABI.json";
+// app.m2cAddress = '0xbb8f8A408e562a4FA5A058E73D9B6d3EAC0e0E33'; //local
+app.m2cAddress = '0x954000046e68ab705878e41c58c466ae7793645c'; //ropsten
+// app.m2cAddress = '0xB4B9A943fdA6CA397e8CCB35cBfEd0552671fBB3'; //mainnet
 
+app.taskBinPath = '/eth/Task.bin';
+app.taskABIPath = '/eth/TaskABI.json';
+app.tokenABIPath = '/eth/EIP20ABI.json';
+
+/**
+ * Start new session using Web3.
+ * The most suitable provider to connect to blockchain will be automatically picked.
+ */
 app.initWeb3 = function() {
   //Is there an injected web3 instance?
   if (typeof web3 !== 'undefined') {
     app.web3Provider = web3.currentProvider;
-    console.log("Use injected/Metamask provider.");
+    console.log('Use injected/Metamask provider.');
   } else {
     //If no injected web3 instance is detected, fall back to Ganache
     app.web3Provider = new Web3.providers.HttpProvider('http://localhost:7545');
-    console.log("Use new provider.");
+    console.log('Use new provider.');
   }
   web3 = new Web3(app.web3Provider);
 };
 
-//Deploy new task with current user as sender
+/** Deploy new task with current user as sender */
 app.newTask = function(question, corrector, keyword, maxScore, endTimestamp) {
   $.getJSON(app.taskABIPath, function(json) {
     $.get(app.taskBinPath, function(bin) {
@@ -31,7 +38,7 @@ app.newTask = function(question, corrector, keyword, maxScore, endTimestamp) {
         //looks like getGasPrice() returns price of mainnet regardless of actual provider
         .then(function(gasPrice){
           task.deploy({
-            data: "0x" + bin, arguments: [
+            data: '0x' + bin, arguments: [
             corrector,
             question,
             keyword,
@@ -51,7 +58,25 @@ app.newTask = function(question, corrector, keyword, maxScore, endTimestamp) {
   });
 };
 
-//Solve an existing task with current user as sender
+/** Sends a POST request to the server to indicate that a new task was created */
+app.postTask = function(transaction, owner) {
+  console.log("Announce task to DAPP backend.");
+  var path = '/create'; //POST to "create" route
+  //What we're actually doing is telling the backend
+  //the genesis transaction address of the new contract
+  var form = $(
+    '<form action="' + path + '" method="post">' +
+    '<input type="hidden" name="transaction" value="' + transaction + '" />' +
+    '<input type="hidden" name="owner" value="' + owner + '" />' +
+    '</form>');
+  $('body').append(form);
+  form.submit();
+};
+
+/*
+ * Solve an existing task with current user as sender.
+ * This function sends a transaction to the Ethereum network.
+ */
 app.solveTask = function(address, answer) {
   $.getJSON(app.taskABIPath, function(json) {
     var task = new web3.eth.Contract(json, address);
@@ -70,20 +95,7 @@ app.solveTask = function(address, answer) {
   });
 };
 
-app.postTask = function(transaction, owner) {
-  console.log("Announce task to DAPP backend.");
-  var path = '/create'; //POST to "create" route
-  //What we're actually doing is telling the backend
-  //the genesis transaction address of the new contract
-  var form = $(
-    '<form action="' + path + '" method="post">' +
-    '<input type="hidden" name="transaction" value="' + transaction + '" />' +
-    '<input type="hidden" name="owner" value="' + owner + '" />' +
-    '</form>');
-  $('body').append(form);
-  form.submit();
-};
-
+/** Sends a POST request to the server to indicate that a answer was sent */
 app.setAnswer = function(contract, testee) {
   console.log("Announce backend that new answer was given.");
   var xhr = new XMLHttpRequest();
@@ -99,17 +111,10 @@ app.setAnswer = function(contract, testee) {
   xhr.send("contract=" + contract + "&testee=" + testee);
 };
 
-app.account = function() {
-  return new Promise(function (resolve, reject) {
-    if(typeof web3 == "undefined") {
-      resolve(); //return undefined
-    }
-    web3.eth.getAccounts(function(error, accounts) {
-      resolve(accounts[0]);
-    });
-  });
-};
-
+/*
+ * Mark an answer task with current user as corrector.
+ * This function sends a transaction to the Ethereum network.
+ */
 app.mark = function(address, testee, score){
   $.getJSON(app.taskABIPath, function(json) {
     var task = new web3.eth.Contract(json, address);
@@ -127,6 +132,7 @@ app.mark = function(address, testee, score){
   });  
 };
 
+/** Sends a POST request to the server to indicate that a score was given */
 app.updateScore = function(contract, testee) {
   console.log("Announce to backend that score was changed.");
   var xhr = new XMLHttpRequest();
@@ -142,7 +148,10 @@ app.updateScore = function(contract, testee) {
   xhr.send("contract=" + contract + "&testee=" + testee);
 };
 
-// Transfer reward to task as current user
+/*
+ * Add an incentive to an existing task with current user as sender.
+ * This function sends a transaction to the Ethereum network.
+ */
 app.payTask = function(contract, tokenAmount) {
   $.getJSON(app.taskABIPath, function(taskAbi) {
     var task = new web3.eth.Contract(taskAbi, contract);
@@ -165,6 +174,7 @@ app.payTask = function(contract, tokenAmount) {
   });
 };
 
+/** Sends a POST request to the server to indicate that an incentive was added */
 app.postReward = function(contract) {
   console.log("Announce to backend that an incentive was added.");
   var xhr = new XMLHttpRequest();
@@ -180,25 +190,16 @@ app.postReward = function(contract) {
   xhr.send("contract=" + contract);
 };
 
-app.getBalance = function(address) {
-  return new Promise(function (resolve, reject) {
-    $.getJSON(app.tokenABIPath, function(eip20Abi) {
-      var token = new web3.eth.Contract(eip20Abi, app.m2cAddress);
-      token.methods.balanceOf(address).call()
-      .then(function(balance){
-        resolve(balance);
-      });
-    });
-  });
-};
-
+/*
+ * Request payout for an existing task with current user as sender.
+ * This function sends a transaction to the Ethereum network.
+ */
 app.getReward = function(contract) {
   $.getJSON(app.taskABIPath, function(taskAbi) {
     var task = new web3.eth.Contract(taskAbi, contract);
     web3.eth.getAccounts(function(error, accounts) {
       web3.eth.getGasPrice()
       .then(function(gasPrice){
-        console.log("PREPARE TRANSACTION");
         task.methods.withdrawTokens().send(
             {from: accounts[0], gasPrice: gasPrice*1.5, gas: 500000})
         .on('transactionHash', function(hash){
@@ -209,6 +210,7 @@ app.getReward = function(contract) {
   });
 };
 
+/** Sends a POST request to the server to indicate that an incentive was payed out */
 app.postPayout = function(contract) {
   console.log("Announce to backend that an incentive was payed out.");
   var xhr = new XMLHttpRequest();
@@ -222,6 +224,37 @@ app.postPayout = function(contract) {
   };
 
   xhr.send("contract=" + contract);
+};
+
+/*
+ * Get public address on choosen network of the current user.
+ * This function fetches data from the Ethereum network (no Ether needed).
+ */
+app.account = function() {
+  return new Promise(function (resolve, reject) {
+    if(typeof web3 == "undefined") {
+      resolve(); //return undefined
+    }
+    web3.eth.getAccounts(function(error, accounts) {
+      resolve(accounts[0]);
+    });
+  });
+};
+
+/*
+ * Get M2C token balance on choosen network of the current user.
+ * This function fetches data from the Ethereum network (no Ether needed).
+ */
+app.getBalance = function(address) {
+  return new Promise(function (resolve, reject) {
+    $.getJSON(app.tokenABIPath, function(eip20Abi) {
+      var token = new web3.eth.Contract(eip20Abi, app.m2cAddress);
+      token.methods.balanceOf(address).call()
+      .then(function(balance){
+        resolve(balance);
+      });
+    });
+  });
 };
 
 $(window).on('load', function() {

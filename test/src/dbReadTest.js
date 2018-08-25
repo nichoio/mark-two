@@ -8,9 +8,11 @@ const dbModule = require('./../../src/db');
 
 var db = new dbModule.DB(dbTestPath);
 
+/** Tests for functions reading from db */
 describe('dbRead', function(){
     var dbTest;
 
+    /** spin up new dummy DB with dummy data */
     before(function() {
         return new Promise(function (resolve) {
             //create new DB
@@ -71,6 +73,7 @@ describe('dbRead', function(){
         });
     });
 
+    /** test if task data is fetched correctly */
     it('getTasksByOwner', function(done) {
         db.getTasksByOwner('0xd0b98B0a7cCa6c5F7099E79DdD79Cfee0f4c3121')
         .then(function(values){
@@ -79,6 +82,7 @@ describe('dbRead', function(){
         });
     });
 
+    /** test if task data by keyword is fetched correctly */
     it('getTasksByKeyword', function(done) {
         db.getTasksByKeyword('testkeyword')
         .then(function(values){
@@ -87,6 +91,7 @@ describe('dbRead', function(){
         });
     });
 
+    /** tear down test db */
     after(function() {
         dbTest.close();
 
