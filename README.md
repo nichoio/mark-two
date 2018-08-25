@@ -29,7 +29,7 @@ For the ropsten network you can request free ether from a [faucet](https://fauce
  Within `src/js/app.js` change the following line:  
  `app.m2cAddress = 'INSERT ADDRESS FOR TOKEN HERE';`  
  You can also use this app **without any tokens**. In this case, the reward feature is not available although the UI will suggest otherwise.  
-6. Spin up a local database (yes, this app utilizes a SQL db, SQLite3 actually)  
+6. Spin up a local database (yes, this app utilizes a SQL db, SQLite3 actually): `./makeSQLite.sh`  
 7. Start the development server:
 `npm start`
 
