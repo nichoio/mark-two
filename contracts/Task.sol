@@ -18,7 +18,13 @@ contract Task {
 
     mapping(address => string) public answers;
     mapping(address => uint) public scores;
-    
+
+    /// @param _corrector The indiviual allowed to give scores
+    /// @param _question String representing the given task
+    /// @param _keyword A more broad keyword to describe a group of tasks
+    /// @param _maxScore The highest achievable score for this task
+    /// @param _endTimestamp Timestamp (UTC). represents the last possible datetime to solve tasks
+    /// @param _token Address containing the token to use for storing rewards
     constructor(
         address _corrector,
         string _question,
@@ -55,6 +61,8 @@ contract Task {
         _;
     }
 
+    /// @notice store the answer of a testee permanently
+    /// @param answer The String which is supposed to represent the answer
     function solve(string answer) public{
         require(
             block.timestamp < endTimestamp && //cannot solve after time is up
@@ -68,6 +76,9 @@ contract Task {
         missingScores++; //one new uncorrected answer
     }
 
+    /// @notice store the score to a specific answer. Can be overriden anytime.
+    /// @param testee The address belonging to the regarding testee
+    /// @param score Integer smaller or equals maxScore.
     function correct(address testee, uint score) onlyCorrector public {
         require(
             score > 0 &&  //giving zero points not allowed since 0 is default val in mapping
@@ -83,7 +94,9 @@ contract Task {
         scores[testee] = score;
     }
 
-    //from https://gist.github.com/ottodevs/c43d0a8b4b891ac2da675f825b1d1dbf
+    /// @notice from https://gist.github.com/ottodevs/c43d0a8b4b891ac2da675f825b1d1dbf
+    /// @param str String which is supposed to be converted to lower case
+    /// @return Lowercase version of the original String
     function _toLower(string str) internal pure returns (string) {
         bytes memory bStr = bytes(str);
         bytes memory bLower = new bytes(bStr.length);
@@ -99,6 +112,7 @@ contract Task {
         return string(bLower);
     }
 
+    /// @notice Get reward after marking all answers.
     function withdrawTokens() ownerOrCorrector public {
         require(
             block.timestamp >= endTimestamp &&
