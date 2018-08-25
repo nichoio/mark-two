@@ -23,7 +23,7 @@ After a corrector has graded all solutions (s)he can receive a reward in the for
 4. You'll need ether, the currency of the Ethereum network on order to use this application, regardless if you want to create tasks or merely want to solve them.  
 For the ropsten network you can request free ether from a [faucet](https://faucet.ropsten.be/). In case you want use this application on the 'official' Ethereum blockchain (mainnet) you'll need to acquire ether for real money.  
 5. Point to a token.  
- The application is designed to utilize the M2C-token which's source code is included within this repo. However, theoretically you point to any contract address which belongs to ERC20 compliant token.  
+ The application is designed to utilize the M2C-token which's source code is included within this repo. However, theoretically you can point to any contract address which belongs to ERC20 compliant token.  
  Within `src/js/app.js` change the following line:  
  `app.m2cAddress = 'INSERT ADDRESS FOR TOKEN HERE';`  
  You can also use this app **without any tokens**. In this case, the reward feature is not available although the UI will suggest otherwise.  
