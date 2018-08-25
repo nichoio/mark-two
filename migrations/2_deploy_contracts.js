@@ -8,7 +8,7 @@ var now1hlater = (moment.utc().valueOf() / 1000) + 3600;
 
 module.exports = function(deployer) {
     deployer.deploy(EIP20)
-    .then(function() {
+    .then(function() { //after deploying Token, deploy Task
 	    return deployer.deploy(
 	        Task,
 	        '0x12345d9cbe3a42899919fbd098d18f79bcf9a071',
@@ -16,7 +16,7 @@ module.exports = function(deployer) {
 	        'testkey',
 	        '42',
 	        now1hlater,
-	        EIP20.address
+	        EIP20.address //point to Token
 	    );
     });
 };

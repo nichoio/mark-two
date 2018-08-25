@@ -8,10 +8,17 @@
       {{ t.question }}&nbsp;
       <span class="badge badge-info keywordSpan">{{ t.keyword }}</span>
     </h5>
-    {{t.created_utc}}
+    {{ t.created_utc }}
   </div>
   <p class="mb-1">Address: {{ t.con }}</p>
-  <p class="mb-1">Corrector: {{ t.corrector }}</p>
+  <p class="mb-1">
+    Corrector:
+    {% if t.owner == t.corrector %}
+      This address
+    {% else %}
+      {{ t.corrector }}
+    {% endif %}
+  </p>
   <p class="mb-1">
     Expires (UTC):
     {{ t.end_utc }}

@@ -1,5 +1,9 @@
 var EIP20 = artifacts.require('EIP20');
 
+/**
+ * Tests for M2C-ERC20 token.
+ * Tests use the truffle test engine.
+ */
 contract('EIP20', accounts => {
     const [account1, account2, account3] = accounts;
     let eip20;
@@ -8,6 +12,7 @@ contract('EIP20', accounts => {
         eip20 = await EIP20.deployed();
     });
 
+    /** test transferring tokens */
     it('transfer', async () => {
         await eip20.transfer(account2, 100, { from: account1});
         return eip20.balanceOf.call(account2)
@@ -16,6 +21,7 @@ contract('EIP20', accounts => {
         });
     });
 
+    /** test if transfer fails when sending zero tokens */
     it("Transfer zero", () => {
         return eip20.transfer(account2, 0, { from: account1})
         .then(() => {

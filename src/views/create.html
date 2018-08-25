@@ -38,7 +38,6 @@
 
 {% block scripts %}
   <script>
-    //TODO: check if any input is empty (jqueryvalidation.org)
     $('#createForm').submit(function(e) {
         console.log('create Task');
         e.preventDefault(); // don't submit form
@@ -48,6 +47,8 @@
         var maxScore = $('#createForm').find('input[id="maxScore"]').val();
         var endDate = $('#createForm').find('input[id="endDate"]').val();
         var endTime = $('#createForm').find('input[id="endTime"]').val();
+
+        //get timestamp from RFC 3339 compliant datetime. convert from ms to seconds
         var endTimestamp = new Date(endDate + 'T' + endTime + 'Z').valueOf() / 1000;
         maxScore = Number(maxScore);
 

@@ -4,6 +4,7 @@
 {% block subheadline %}
   List of all assignments which have the given address as owner.
   Note that newly created assignments will not show up immediately.
+  Use this view to add incentives to tasks.
 {% endblock %}
 {% block tasks %}
   {% for t in tasks %}
@@ -22,7 +23,7 @@
           $('.taskReward').each(function() {
             //only append if there's no span for "pending" or already given reward yet
             if($(this).find('span').length == 0) {
-              $(this).append(
+              $(this).append( //add button for adding incentives
               	'<span class="float-right form-inline">' +
               	'<input class="form-control amountInput"/>' +
                 '<a href="">' +
@@ -38,9 +39,9 @@
       })
       .then(function(acc){
         $('.pay').on('click', function(event) {
-          event.preventDefault();
+          event.preventDefault(); //prevent opening the link of underlying list item
 
-          //get the right contract address string from list...
+          //get the right contract address string from list
           var contract = $(this).closest('.list-group-item').attr('id');
           var amount = parseInt($(this).parent().siblings('.amountInput').val());
 
@@ -50,7 +51,7 @@
       })
       .then(function(){
         $('.amountInput').on('click', function(event) {
-          event.preventDefault();
+          event.preventDefault(); //prevent opening the link of underlying list item
       	});
       });
     });

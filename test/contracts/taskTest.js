@@ -1,7 +1,11 @@
-var Task = artifacts.require('Task');
-
 //inspired by:
 //https://github.com/MichalZalecki/tdd-solidity-intro/blob/master/test/FundingTest.js
+var Task = artifacts.require('Task');
+
+/**
+ * Tests for Task contract.
+ * Tests use the truffle test engine.
+ */
 contract('Task', accounts => {
     const [account1, account2, account3] = accounts;
     let task;
@@ -10,6 +14,7 @@ contract('Task', accounts => {
         task = await Task.deployed();
     });
 
+    /** test reading the question string */
     it('call question', function() {
         return task.question.call()
         .then(function(question) {
@@ -17,6 +22,7 @@ contract('Task', accounts => {
         });
     });
 
+    /** test reading the keyword string */
     it('call keyword', function() {
         return task.keyword.call()
         .then(function(keyword) {
@@ -24,6 +30,7 @@ contract('Task', accounts => {
         });
     });
 
+    /** test adding a string to answer mapping */
     it("answer", async () => {
         await task.solve('myAnswer', { from: account1});
         return task.answers.call(account1)
