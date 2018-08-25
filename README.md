@@ -1,7 +1,7 @@
 # mark-two
 
 ...bringing assignments, exams and marks to the Blockchain.  
-This is DApp allowing you to create so-called assignments, mainly consisting of a question and the possibility to solve such assignments. Moreover external correctors can grade these solutions. Creators of assignments can also incentivise their tasks.  
+This is a **DApp for Ethereum** allowing you to create so-called assignments, mainly consisting of a question and the possibility to solve such assignments. Moreover external correctors can grade these solutions. Creators of assignments can also incentivise their tasks.  
 After a corrector has graded all solutions (s)he can receive a reward in the form of **M2C-Tokens** (Mark2Coin-Tokens)!
 
 ## How to set it up
