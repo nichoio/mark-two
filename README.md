@@ -2,7 +2,7 @@
 
 ...bringing assignments, exams and marks to the Blockchain.  
 This is DApp allowing you to create so-called assignments, mainly consisting of a question and the possibility to solve such assignments. Moreover external correctors can grade these solutions. Creators of assignments can also incentivise their tasks.  
-After a corrector has graded all solutions (s)he can receive a reward, in the form of **M2C-Tokens** (Mark2Coin-Tokens)!
+After a corrector has graded all solutions (s)he can receive a reward in the form of **M2C-Tokens** (Mark2Coin-Tokens)!
 
 ## How to set it up
 1. Set providers for web3.
@@ -26,7 +26,7 @@ For the ropsten network you can request free ether from a [faucet](https://fauce
  The application is designed to utilize the M2C-token which's source code is included within this repo. However, theoretically you point to any contract address which belongs to ERC20 compliant token.  
  Within `src/js/app.js` change the following line:  
  `app.m2cAddress = 'INSERT ADDRESS FOR TOKEN HERE';`  
- You can also use this app **without any tokens**. In this case, the reward feature is not available although the UI will suggest otherwise. 
+ You can also use this app **without any tokens**. In this case, the reward feature is not available although the UI will suggest otherwise.  
 6. Spin up a local database (yes, this app utilizes a SQL db, SQLite3 actually)  
 7. Start the development server:
 `npm start`
