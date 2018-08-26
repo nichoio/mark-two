@@ -33,8 +33,6 @@ For the ropsten network you can request free ether from a [faucet](https://fauce
 7. Start the development server:
 `npm start`
 
-The development server exposing the API is running now!
-
 ## Use the DApp
 
 You will find the app under `http://localhost:3000`. The UI is pretty self-explanatory so i won't go into details here.
