@@ -1,6 +1,8 @@
 /*
-Implements EIP20 token standard: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md
+Original source: https://github.com/ConsenSys/Tokens/blob/master/contracts/eip20/EIP20.sol
 Slightly adapted by Nicholas Kappel
+
+Implements EIP20 token standard: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md
 .*/
 
 pragma solidity ^0.4.23;
