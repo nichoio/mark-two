@@ -22,7 +22,7 @@ After a corrector has graded all solutions (s)he can receive a reward in the for
  `var eth = new ether.Eth(providers.ropsten);`  
 2. Install dependencies: `npm install`  
 3. Add the [Metamask](https://metamask.io/) extension to your browser. The application was developed using Firefox and Chrome so there's no guarantee that it will work on Mist or Brave. Actually there are no guarantees given that this application works at all.  
-4. You'll need ether, the currency of the Ethereum network on order to use this application, regardless if you want to create tasks or merely want to solve them.  
+4. You'll need Ether, the currency of the Ethereum network in order to use this application, regardless if you want to create tasks or merely want to solve them.  
 For the ropsten network you can request free ether from a [faucet](https://faucet.ropsten.be/). In case you want use this application on the 'official' Ethereum blockchain (mainnet) you'll need to acquire ether for real money.  
 5. Point to a token.  
  The application is designed to utilize the M2C-token which's source code is included within this repo. However, theoretically you can point to any contract address which belongs to ERC20 compliant token.  
