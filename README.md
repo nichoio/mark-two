@@ -18,7 +18,7 @@ After a corrector has graded all solutions (s)he can receive a reward in the for
  ```
 
  There's a good chance that you don't want to run a node locally to connect to. Instead you can request a free API key on [Infura](https://infura.io/) for example.
- Then you can utilize the connection in `src/server.js`. The current set up has preconfigured a connection to ropsten:
+ Then you can utilize this connection in `src/server.js`. The current setup has preconfigured a connection to ropsten:
  `var eth = new ether.Eth(providers.ropsten);`  
 2. Install dependencies: `npm install`  
 3. Add the [Metamask](https://metamask.io/) extension to your browser. The application was developed using Firefox and Chrome so there's no guarantee that it will work on Mist or Brave. Actually there are no guarantees given that this application works at all.  
